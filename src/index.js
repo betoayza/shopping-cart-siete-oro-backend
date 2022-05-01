@@ -6,7 +6,7 @@ import router from './routes/routes_file.js';
 
 const port_number = process.env.PORT || 4000;
 
-//app.use(express.json()); //para que el navegador muestre todo en formato json
+app.use(express.json()); //para que el navegador muestre todo en formato json
 // Middleware para parsear el cuerpo de las peticiones HTTP
 app.use(express.urlencoded({
     extended: true

@@ -19,6 +19,8 @@ const orderSchema = new Schema ({
     price: {type: Number, required: true},
     state: {type: String, required: true}, 
     date: {type: Date, required: true}    
+},{
+    collection: 'orders'
 });
 
 //SchemaProduct.plugin(autoIncrement.plugin, 'code');

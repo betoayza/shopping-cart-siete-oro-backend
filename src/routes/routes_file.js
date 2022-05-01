@@ -1,12 +1,9 @@
-//RUTAS NECESARIAS PARA TRABAJAR CON REACT
-
 import { Router } from "express";
-const router = Router(); //objeto en el cual ingresaré las rutas
-//models
 import Product from "../models/product.js";
 import Order from "../models/order.js";
-import User from "../models/user.js";
+import User from "../models/userModel.js";
 
+const router = Router();
 //ruta principal: mostrar mensaje de exito
 router.get("/", async (req, res) => {
   try {
@@ -22,7 +19,7 @@ router.post("/admin/register/product", async (req, res) => {
   try {
     const { name, description, price, stock } = req.body;
     //recorrer array de productos hardcodeados
-    const producto = new Product({ name, description, price, stock });
+    const producto = new Product({ name, description, price, stock }); //************ */
     await producto.save(); //SEGUIR EN ESTE PUNTO
     //mostrar producto nuevo
     res.json(producto);
@@ -36,12 +33,12 @@ router.post("/admin/register/product", async (req, res) => {
 
 router.get("/products-founded", async (req, res) => {
   try {
-    console.log(req.query);
-    const article = req.query;
-    console.log("asd");
+    //console.log(req.query);
+    const product = req.query.name;
+    console.log("Buscando ", product, "...");
     //buscar la lista de productos incluodo el nombre del articulo
-    const coincidences = await Product.find(article); //debe incluir en el name, son ser igual
-    console.log(coincidences);
+    const coincidences = await Product.find({ name: { $regex: product } }); //debe incluir en el name, son ser igual
+    console.log("Resultados encontrados: ", coincidences);
     res.json(coincidences);
   } catch (error) {
     //res.json('No hay productos disponibles!');
@@ -145,6 +142,32 @@ router.delete("/admin/delete/user", async (req, res) => {
   }
 });
 
+router.post("/signup", async (req, res) => {
+  const { name, lastName, email, passw, address, neighborhood, phone, zip, status } =
+    req.body;
+  const dataUser = {
+    name,
+    lastName,
+    email,
+    passw,
+    address,
+    neighborhood,
+    phone,
+    zip,
+    status
+  };
+  console.log(name);
+  const newUser = new User(dataUser);
+  const result = await newUser.save();
+  res.json(result);
+});
+
+router.post("/user/profile/edit", (req, res) => {
+  const { name, lastName, email, passw, address, neighborhood, phone, zip, status } =
+    req.body;
+  console.log(name);
+});
+
 //ruta por defecto
 router.get("*", (req, res) => {
   try {
@@ -154,5 +177,6 @@ router.get("*", (req, res) => {
     console.log("El error es: ", error);
   }
 });
+
 
 export default router;

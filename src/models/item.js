@@ -18,6 +18,8 @@ const itemSchema = new Schema ({
     description: {type: String, required: true},
     price: {type: Number, required: true}, 
     lot: {type: Number, required: true}    //cantidad
+},{
+    collection: 'items'
 });
 
 //SchemaProduct.plugin(autoIncrement.plugin, 'code');
