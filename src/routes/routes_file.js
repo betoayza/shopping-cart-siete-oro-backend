@@ -2,6 +2,7 @@ import { Router } from "express";
 import Product from "../models/product.js";
 import Order from "../models/order.js";
 import User from "../models/userModel.js";
+import UserModel from "../models/userModel.js";
 
 const router = Router();
 //ruta principal: mostrar mensaje de exito
@@ -142,9 +143,26 @@ router.delete("/admin/delete/user", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  const { email, passw } = req.body;
+  //const user = new UserModel(req.query);
+  const doc = await UserModel.findOne({$and: [{email}, {passw}]}).exec();
+  console.log(doc);
+  res.json(doc);
+});
+
 router.post("/signup", async (req, res) => {
-  const { name, lastName, email, passw, address, neighborhood, phone, zip, status } =
-    req.body;
+  const {
+    name,
+    lastName,
+    email,
+    passw,
+    address,
+    neighborhood,
+    phone,
+    zip,
+    status,
+  } = req.body;
   const dataUser = {
     name,
     lastName,
@@ -154,7 +172,7 @@ router.post("/signup", async (req, res) => {
     neighborhood,
     phone,
     zip,
-    status
+    status,
   };
   console.log(name);
   const newUser = new User(dataUser);
@@ -162,10 +180,37 @@ router.post("/signup", async (req, res) => {
   res.json(result);
 });
 
-router.post("/user/profile/edit", (req, res) => {
-  const { name, lastName, email, passw, address, neighborhood, phone, zip, status } =
-    req.body;
+//********* */
+
+router.post("/user/profile/edit", async (req, res) => {
+  const {
+    name,
+    lastName,
+    email,
+    passw,
+    address,
+    neighborhood,
+    phone,
+    zip,
+    status,
+  } = req.body;
   console.log(name);
+  const userData = {
+    name,
+    lastName,
+    email,
+    passw,
+    address,
+    neighborhood,
+    phone,
+    zip,
+    status,
+  };
+  const newUser = new UserModel(userData);
+  const doc = await newUser.findOne({ email }).exec();
+  doc = { ...newUser };
+  const doc2 = await doc.save();
+  console.log("Documento editado existosamente: ", doc2);
 });
 
 //ruta por defecto
@@ -177,6 +222,5 @@ router.get("*", (req, res) => {
     console.log("El error es: ", error);
   }
 });
-
 
 export default router;
