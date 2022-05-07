@@ -9,7 +9,8 @@ conn.once('open', () => {
     console.log('Connected to MongoDB');
 });                  
 
-const userSchema = new Schema ({           
+const userSchema = new Schema ({    
+    code: {type: Number, required: true},    
     name: {type: String, required: true},    
     lastName: {type: String, required: true},
     email: {type: String, required: true}, 

@@ -153,6 +153,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   const {
+    code,
     name,
     lastName,
     email,
@@ -164,6 +165,7 @@ router.post("/signup", async (req, res) => {
     status,
   } = req.body;
   const dataUser = {
+    code,
     name,
     lastName,
     email,
@@ -176,8 +178,8 @@ router.post("/signup", async (req, res) => {
   };
   console.log(name);
   const newUser = new User(dataUser);
-  const result = await newUser.save();
-  res.json(result);
+  const doc = await newUser.save();
+  res.json(doc);
 });
 
 //********* */
