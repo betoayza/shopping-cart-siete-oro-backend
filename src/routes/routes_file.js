@@ -146,7 +146,7 @@ router.delete("/admin/delete/user", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, passw } = req.body;
   //const user = new UserModel(req.query);
-  const doc = await UserModel.findOne({$and: [{email}, {passw}]}).exec();
+  const doc = await UserModel.findOne({ $and: [{ email }, { passw }] }).exec();
   console.log(doc);
   res.json(doc);
 });
@@ -184,8 +184,11 @@ router.post("/signup", async (req, res) => {
 
 //********* */
 
-router.post("/user/profile/edit", async (req, res) => {
+router.put("/user/profile/edit", async (req, res) => {
+  try{
+  console.log(req.body.form);
   const {
+    code,
     name,
     lastName,
     email,
@@ -194,25 +197,28 @@ router.post("/user/profile/edit", async (req, res) => {
     neighborhood,
     phone,
     zip,
-    status,
-  } = req.body;
+  } = req.body.form;
   console.log(name);
-  const userData = {
-    name,
-    lastName,
-    email,
-    passw,
-    address,
-    neighborhood,
-    phone,
-    zip,
-    status,
-  };
-  const newUser = new UserModel(userData);
-  const doc = await newUser.findOne({ email }).exec();
-  doc = { ...newUser };
-  const doc2 = await doc.save();
-  console.log("Documento editado existosamente: ", doc2);
+
+  const User = new UserModel(req.body.form);
+  console.log(User);
+
+  const doc = await UserModel.findOne({ code }).exec();
+  doc.name = name;
+  doc.lastName = lastName;
+  doc.email = email;
+  doc.passw = passw;
+  doc.address = address;
+  doc.neighborhood = neighborhood;
+  doc.phone = phone;
+  doc.zip = zip;
+
+  const doc2=await doc.save();
+  console.log(doc2);
+  res.json(doc2);
+}catch(error){
+  console.error('El error es: ', error);
+}
 });
 
 //ruta por defecto
