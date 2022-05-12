@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Product from "../models/product.js";
+import ProductModel from "../models/productModel.js";
 import Order from "../models/order.js";
 import User from "../models/userModel.js";
 import UserModel from "../models/userModel.js";
@@ -16,16 +16,13 @@ router.get("/", async (req, res) => {
 });
 
 //register a product
-router.post("/admin/register/product", async (req, res) => {
+router.post("/admin/add-product", async (req, res) => {
   try {
     const { name, description, price, stock } = req.body;
-    //recorrer array de productos hardcodeados
-    const producto = new Product({ name, description, price, stock }); //************ */
-    await producto.save(); //SEGUIR EN ESTE PUNTO
-    //mostrar producto nuevo
-    res.json(producto);
-    console.log("Alta exitosa!: ", producto);
-    //res.render('home', { listaProductos });
+    const product = new ProductModel({ name, description, price, stock }); //************ */
+    const doc = await product.save(); 
+    console.log("Alta exitosa!: ", doc);
+    res.json(product);
   } catch (error) {
     res.json("Ha ocurrido un error!: ", error);
     console.error("El error es: ", error);
@@ -185,40 +182,37 @@ router.post("/signup", async (req, res) => {
 //********* */
 
 router.put("/user/profile/edit", async (req, res) => {
-  try{
-  console.log(req.body.form);
-  const {
-    code,
-    name,
-    lastName,
-    email,
-    passw,
-    address,
-    neighborhood,
-    phone,
-    zip,
-  } = req.body.form;
-  console.log(name);
+  try {
+    console.log(req.body.form);
+    const {
+      code,
+      name,
+      lastName,
+      email,
+      passw,
+      address,
+      neighborhood,
+      phone,
+      zip,
+    } = req.body.form;
+    console.log(name);
 
-  const User = new UserModel(req.body.form);
-  console.log(User);
+    const doc = await UserModel.findOne({ code }).exec();
+    doc.name = name;
+    doc.lastName = lastName;
+    doc.email = email;
+    doc.passw = passw;
+    doc.address = address;
+    doc.neighborhood = neighborhood;
+    doc.phone = phone;
+    doc.zip = zip;
 
-  const doc = await UserModel.findOne({ code }).exec();
-  doc.name = name;
-  doc.lastName = lastName;
-  doc.email = email;
-  doc.passw = passw;
-  doc.address = address;
-  doc.neighborhood = neighborhood;
-  doc.phone = phone;
-  doc.zip = zip;
-
-  const doc2=await doc.save();
-  console.log(doc2);
-  res.json(doc2);
-}catch(error){
-  console.error('El error es: ', error);
-}
+    const doc2 = await doc.save();
+    console.log(doc2);
+    res.json(doc2);
+  } catch (error) {
+    console.error("El error es: ", error);
+  }
 });
 
 //ruta por defecto

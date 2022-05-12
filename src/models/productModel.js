@@ -19,11 +19,8 @@ const productSchema = new Schema ({
     description: {type: String, required: true},    
     price: {type: Number, required: true},
     stock: {type: Number, required: true},
-    /*img:
-    {
-        data: Buffer,
-        contentType: String
-    }*/
+    image: {data: Buffer, contentType: String},
+    status: {type: String, required: true}
 },
 {
     collection: 'products'
@@ -33,7 +30,7 @@ const productSchema = new Schema ({
 //SchemaProduct.plugin(autoIncrement.plugin, 'code');
 //let code = connection.model('code', SchemaProduct);
 
-const Product = conn.model('Product', productSchema); //'producto' es el nombre del modelo;
+const ProductModel = conn.model('ProductModel', productSchema); //'producto' es el nombre del modelo;
 //Exportar el modelo de la base de datos con el esquema de productos
 //Servirá para conectarse y manipular la bds
-export default Product;
+export default ProductModel;
