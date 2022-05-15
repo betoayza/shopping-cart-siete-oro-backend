@@ -18,11 +18,17 @@ router.get("/", async (req, res) => {
 //register a product
 router.post("/admin/add-product", async (req, res) => {
   try {
-    const { name, description, price, stock } = req.body;
-    const product = new ProductModel({ name, description, price, stock }); //************ */
-    const doc = await product.save(); 
+    const { name, description, price, stock, image } = req.body.productData;
+    const product = new ProductModel({
+      name,
+      description,
+      price,
+      stock,
+      image,
+    });
+    const doc = await product.save();
     console.log("Alta exitosa!: ", doc);
-    res.json(product);
+    res.json(doc);
   } catch (error) {
     res.json("Ha ocurrido un error!: ", error);
     console.error("El error es: ", error);
@@ -149,34 +155,49 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  const {
-    code,
-    name,
-    lastName,
-    email,
-    passw,
-    address,
-    neighborhood,
-    phone,
-    zip,
-    status,
-  } = req.body;
-  const dataUser = {
-    code,
-    name,
-    lastName,
-    email,
-    passw,
-    address,
-    neighborhood,
-    phone,
-    zip,
-    status,
-  };
-  console.log(name);
-  const newUser = new User(dataUser);
-  const doc = await newUser.save();
-  res.json(doc);
+  try {
+    const {
+      code,
+      name,
+      lastName,
+      email,
+      passw,
+      address,
+      neighborhood,
+      phone,
+      zip,
+      type,
+      status,
+    } = req.body;
+    const dataUser = {
+      code,
+      name,
+      lastName,
+      email,
+      passw,
+      address,
+      neighborhood,
+      phone,
+      zip,
+      type,
+      status,
+    };
+    console.log(name);
+    const docs = await UserModel.find({});
+    console.log("Docs: ", docs);
+    if (!docs.length) {
+      dataUser.type = "Admin";
+      const newUser = new User(dataUser);
+      const doc = await newUser.save();
+      res.json(doc);
+    } else {
+      const newUser = new User(dataUser);
+      const doc = await newUser.save();
+      res.json(doc);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 //********* */
