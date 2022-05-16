@@ -161,6 +161,7 @@ router.post("/signup", async (req, res) => {
       name,
       lastName,
       email,
+      username,
       passw,
       address,
       neighborhood,
@@ -174,6 +175,7 @@ router.post("/signup", async (req, res) => {
       name,
       lastName,
       email,
+      username,
       passw,
       address,
       neighborhood,
@@ -183,7 +185,7 @@ router.post("/signup", async (req, res) => {
       status,
     };
     console.log(name);
-    const docs = await UserModel.find({});
+    let docs = await UserModel.find({});
     console.log("Docs: ", docs);
     if (!docs.length) {
       dataUser.type = "Admin";
@@ -191,9 +193,14 @@ router.post("/signup", async (req, res) => {
       const doc = await newUser.save();
       res.json(doc);
     } else {
-      const newUser = new User(dataUser);
-      const doc = await newUser.save();
-      res.json(doc);
+      docs = await UserModel.find({$or: [{email}, {username}]});
+      if(!docs.length){
+        const newUser = new User(dataUser);
+        const doc = await newUser.save();
+        res.json(doc);
+      }else{
+        res.json({message: "User already exists!"});
+      }
     }
   } catch (error) {
     console.log(error);
