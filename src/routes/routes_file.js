@@ -18,19 +18,13 @@ router.get("/", async (req, res) => {
 //register a product
 router.post("/admin/add-product", async (req, res) => {
   try {
-    const { name, description, price, stock, image } = req.body.productData;
-    const product = new ProductModel({
-      name,
-      description,
-      price,
-      stock,
-      image,
-    });
+    const { name, description, price, stock, image, status } =
+      req.body.productData;
+    const product = new ProductModel(req.body);
     const doc = await product.save();
     console.log("Alta exitosa!: ", doc);
     res.json(doc);
   } catch (error) {
-    res.json("Ha ocurrido un error!: ", error);
     console.error("El error es: ", error);
   }
 });
@@ -52,7 +46,7 @@ router.get("/products-founded", async (req, res) => {
 
 //Browser consults all products
 //ready
-router.get("/all-products", async (req, res) => {
+router.get("/products/all", async (req, res) => {
   try {
     //buscar la lista de productos
     const listaProductos = await Product.find();
@@ -184,22 +178,29 @@ router.post("/signup", async (req, res) => {
       type,
       status,
     };
-    console.log(name);
-    let docs = await UserModel.find({});
+    
+    const docs = await UserModel.find({});
     console.log("Docs: ", docs);
-    if (!docs.length) {
+    //Si no hay usuarios registrados antes, crear usuario admin
+    if (!docs) {
       dataUser.type = "Admin";
       const newUser = new User(dataUser);
       const doc = await newUser.save();
       res.json(doc);
+      //Si hay usuarios registrados antes
     } else {
-      docs = await UserModel.find({$or: [{email}, {username}]});
-      if(!docs.length){
+      //validar por email y usuario
+      const docs2 = await UserModel.findOne({ $or: [{ email }, { username }] }).exec();
+      console.log("***", docs2);
+      //si no hay coincidencias
+      if (!docs2) {
+        //dar de alta el usuario
         const newUser = new User(dataUser);
-        const doc = await newUser.save();
-        res.json(doc);
-      }else{
-        res.json({message: "User already exists!"});
+        const doc2 = await newUser.save();
+        res.json(doc2);
+        //Si no, el usuario existe
+      } else {
+        res.json({ message: "User already exists!" });
       }
     }
   } catch (error) {
