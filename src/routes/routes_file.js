@@ -15,20 +15,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-//register a product
-router.post("/admin/add-product", async (req, res) => {
-  try {
-    const { name, description, price, stock, image, status } =
-      req.body.productData;
-    const product = new ProductModel(req.body);
-    const doc = await product.save();
-    console.log("Alta exitosa!: ", doc);
-    res.json(doc);
-  } catch (error) {
-    console.error("El error es: ", error);
-  }
-});
-
 router.get("/products-founded", async (req, res) => {
   try {
     //console.log(req.query);
@@ -104,6 +90,21 @@ router.get("/admin/search/recieved-orders", async (req, res) => {
   }
 });
 
+//register a product
+router.post("/admin/product/add", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { name, description, price, stock, image, status } =
+      req.body.productData;
+    const product = new ProductModel(req.body);
+    const doc = await product.save();
+    console.log("Alta exitosa!: ", doc);
+    res.json(doc);
+  } catch (error) {
+    console.error("El error es: ", error);
+  }
+});
+
 //modify a product by ID
 //ready
 router.put("/admin/modif-product", async (req, res) => {
@@ -141,11 +142,19 @@ router.delete("/admin/delete/user", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { email, passw } = req.body;
-  //const user = new UserModel(req.query);
-  const doc = await UserModel.findOne({ $and: [{ email }, { passw }] }).exec();
-  console.log(doc);
-  res.json(doc);
+  try {
+    const { user, password } = req.body;
+    const doc = await UserModel.findOne({$and: [{ $or: [{ email: user }, { username: user }] }, { password }],
+    }).exec();
+    console.log("*", doc);
+    if(doc){
+      res.json(doc);
+    } else {
+      res.json({});
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 router.post("/signup", async (req, res) => {
@@ -156,7 +165,7 @@ router.post("/signup", async (req, res) => {
       lastName,
       email,
       username,
-      passw,
+      password,
       address,
       neighborhood,
       phone,
@@ -170,7 +179,7 @@ router.post("/signup", async (req, res) => {
       lastName,
       email,
       username,
-      passw,
+      password,
       address,
       neighborhood,
       phone,
@@ -178,11 +187,11 @@ router.post("/signup", async (req, res) => {
       type,
       status,
     };
-    
+
     const docs = await UserModel.find({});
     console.log("Docs: ", docs);
     //Si no hay usuarios registrados antes, crear usuario admin
-    if (!docs) {
+    if (!docs.length) {
       dataUser.type = "Admin";
       const newUser = new User(dataUser);
       const doc = await newUser.save();
@@ -190,7 +199,9 @@ router.post("/signup", async (req, res) => {
       //Si hay usuarios registrados antes
     } else {
       //validar por email y usuario
-      const docs2 = await UserModel.findOne({ $or: [{ email }, { username }] }).exec();
+      const docs2 = await UserModel.findOne({
+        $or: [{ email }, { username }],
+      }).exec();
       console.log("***", docs2);
       //si no hay coincidencias
       if (!docs2) {

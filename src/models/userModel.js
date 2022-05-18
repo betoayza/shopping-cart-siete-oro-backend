@@ -14,7 +14,7 @@ const userSchema = new Schema ({
     name: {type: String, required: true},    
     lastName: {type: String, required: true},
     email: {type: String, required: true}, 
-    passw: {type: String, required: true},
+    password: {type: String, required: true},
     address: {type: String, required: true},
     neighborhood: {type: String, required: true},  
     phone: {type: Number, required: true},
