@@ -14,7 +14,7 @@ conn.once('open', () => {
 //autoIncrement.initialize(connection);                        
 
 const productSchema = new Schema ({  
-    //code: {type: Number, required: false}, 
+    code: {type: Number, required: false}, 
     name: {type: String, required: true},  
     description: {type: String, required: true},    
     price: {type: Number, required: true},
