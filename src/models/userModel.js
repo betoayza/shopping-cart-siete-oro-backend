@@ -22,7 +22,7 @@ const userSchema = new Schema(
     neighborhood: { type: String, required: true },
     phone: { type: Number, required: true },
     zip: { type: String, required: true },
-    type: { type: String, required: true },
+    type: { type: String, required: true },    
     status: { type: String, required: true },
   },
   {

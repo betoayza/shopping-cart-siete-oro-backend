@@ -2,14 +2,13 @@ import { Router } from "express";
 import ProductModel from "../models/productModel.js";
 import OrderModel from "../models/orderModel.js";
 import UserModel from "../models/userModel.js";
-import ShoppingCartModel from "../ShoppingCartModel";
+import ShoppingCartModel from "../models/shoppingCartModel.js";
 // import multer from 'multer';
 // const upload = multer({ dest: './public/data/uploads/' })
 
 const router = Router();
 
-//----------PRODUCTS--------------------------
-
+//GENERIC ACTIONS
 router.get("/products/find", async (req, res) => {
   try {
     const { name } = req.query;
@@ -41,7 +40,6 @@ router.get("/products/all", async (req, res) => {
 });
 
 //ADMIN ROUTES
-
 router.get("/admin/search/users/all", async (req, res) => {
   try {
     console.log(req.query);
@@ -122,7 +120,7 @@ router.get("/admin/search/order/:code", async (req, res)=>{
   }
 });
 
-router.get("/admin/search/orders/recieved", async (req, res) => {
+router.get("/admin/search/orders/received", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await OrderModel.find({ status: "Entregado" });
@@ -152,7 +150,6 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
   }
 });
 
-//Pediente
 router.post("/admin/product/add", async (req, res) => {
   // upload.single('image')
   try {
@@ -173,7 +170,7 @@ router.post("/admin/product/add", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //Pediente
 
 router.put("/admin/product/modify", async (req, res) => {
   try {
@@ -231,10 +228,11 @@ router.get("/admin/product/search/:code", async (req, res) => {
   }
 });
 
+//LOGIN & SIGNUP (working)
 router.post("/login", async (req, res) => {
   try {
-    const { email } = req.body;
-    let doc = await ClientModel.findOne({ email }).exec();    
+    const { data, password } = req.body;
+    let doc = await UserModel.findOne({$and: [{$or: [{email: data}, {username: data}]}, { password }]}).exec();    
     if (doc) {
       res.json(doc);
     } else {
@@ -247,9 +245,9 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, username } = req.body;
     //if there are not users, create admin
-    let doc = await ClientModel.find({});        
+    let doc = await UserModel.find({});        
     if (!doc.length) {
       const dataUser = { ...req.body };      
       dataUser.type = "Admin";
@@ -259,13 +257,19 @@ router.post("/signup", async (req, res) => {
       //if there are users, create an stardard user
     } else {
       //validate by email & username
-      doc = await ClientModel.findOne({ email }).exec();      
+      doc = await UserModel.findOne({$or: [{ email }, { username }]}).exec();      
       //if user exists do not register
       if (doc) {
         res.json(null);
-      } else {//otherwise, register
-        const newUser = new User(dataUser);
+      } else {//otherwise, register user
+        const dataUser = { ...req.body };  
+        const newUser = new UserModel(dataUser);
         doc = await newUser.save();
+        //create user shopping cart
+        const newShoppingCart=new ShoppingCartModel({code: Date.now(), userCode: doc.code, products: []});
+        let doc2=await newShoppingCart.save();
+        console.log(doc2)
+        //just response with new user
         res.json(doc);
       }
     }
@@ -274,6 +278,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+//USER ROUTES
 router.put("/user/profile/edit", async (req, res) => {
   try {
     console.log(req.body.form);
@@ -289,7 +294,7 @@ router.put("/user/profile/edit", async (req, res) => {
       zip,
     } = req.body.form;    
 
-    let doc = await ClientModel.findOne({ code }).exec();
+    let doc = await UserModel.findOne({ code }).exec();
     if(doc){
       doc.name = name;
       doc.lastName = lastName;
@@ -306,19 +311,18 @@ router.put("/user/profile/edit", async (req, res) => {
       res.json(null);
     }
   } catch (error) {
-    console.error("El error es: ", error);
+    console.error(error);    
   }
 });
 
-//USER ROUTES
-router.get("/user/orders", (req,res)=>{
+router.get("/user/orders/:code", async (req,res)=>{
   try {
-    const {code}=req.query;
-    let doc=await OrderModel.find({code});
-    if(!doc.length){
-      res.json(null);
-    }else{
+    const {code}=req.params.code;
+    let doc=await OrderModel.findOne({code}).exec();
+    if(doc){
       res.json(doc);
+    }else{
+      res.json(null);
     }
   } catch (error) {
     console.error(error);
@@ -341,18 +345,14 @@ try {
 }
 });
 
-// router.get('/user/shoppingcart', async (req, res)=>{
-//   try {
-//     let doc=await 
-//   } catch (error) {
-    
-//   }
-// });
-
-//default route
-router.get("*", (req, res) => {
-  try {
-    res.json({ status: "Error 404" });
+router.get("/user/orders/all", async (req,res)=>{
+  try {    
+    let doc=await OrderModel.find({});
+    if(!doc.length){
+      res.json(null);
+    }else{
+      res.json(doc);
+    }
   } catch (error) {
     console.error(error);
   }
