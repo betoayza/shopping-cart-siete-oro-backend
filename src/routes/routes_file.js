@@ -286,7 +286,8 @@ router.put("/user/profile/edit", async (req, res) => {
       code,
       name,
       lastName,
-      email,      
+      email,   
+      username,   
       password,
       address,
       neighborhood,
@@ -299,6 +300,7 @@ router.put("/user/profile/edit", async (req, res) => {
       doc.name = name;
       doc.lastName = lastName;
       doc.email = email;
+      doc.username = username; 
       doc.password = password;
       doc.address = address;
       doc.neighborhood = neighborhood;
