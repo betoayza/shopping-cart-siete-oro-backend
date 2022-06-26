@@ -30,6 +30,6 @@ const userSchema = new Schema(
   }
 );
 
-const ClientModel = conn.model("ClientModel", userSchema);
+const UserModel = conn.model("UserModel", userSchema);
 
-export default ClientModel;
+export default UserModel;

@@ -9,12 +9,12 @@ import ShoppingCartModel from "../models/shoppingCartModel.js";
 const router = Router();
 
 //GENERIC ACTIONS
-router.get("/products/find", async (req, res) => {
+router.get("/products/find/name", async (req, res) => {
   try {
     const { name } = req.query;
     console.log(req.query);
     let doc = await ProductModel.find({ name });
-    if (doc.length > 0) {
+    if (doc.length) {
       console.log(doc);
       res.json(doc);
     } else {
@@ -28,9 +28,9 @@ router.get("/products/find", async (req, res) => {
 router.get("/products/all", async (req, res) => {
   try {
     let doc = await ProductModel.find({});
-    if (doc.length > 0) {
+    if (doc.length) {
       console.log(doc);
-      res.json(listaProductos);
+      res.json(doc);
     } else {
       res.json(null);
     }
@@ -266,7 +266,7 @@ router.post("/signup", async (req, res) => {
         const newUser = new UserModel(dataUser);
         doc = await newUser.save();
         //create user shopping cart
-        const newShoppingCart=new ShoppingCartModel({code: Date.now(), userCode: doc.code, products: []});
+        const newShoppingCart=new ShoppingCartModel({code: doc.code, products: []}); //shopping cart code is user code
         let doc2=await newShoppingCart.save();
         console.log(doc2)
         //just response with new user
@@ -331,11 +331,11 @@ router.get("/user/orders/:code", async (req,res)=>{
   }
 });
 
-router.get('user/shoppingcart', async (req, res)=>{
+router.get('user/shopping-cart', async (req, res)=>{
 try {
   console.log(req.query);
   const {code}=req.query;
-  let doc=await ShoppingCartModel.findOne({userCode: code}).exec();
+  let doc=await ShoppingCartModel.findOne({code}).exec();
   if(doc){
     console.log(doc);
     res.json(doc);
@@ -350,10 +350,11 @@ try {
 router.get("/user/orders/all", async (req,res)=>{
   try {    
     let doc=await OrderModel.find({});
-    if(!doc.length){
-      res.json(null);
-    }else{
+    if(doc.length){
+      console.log(doc);
       res.json(doc);
+    }else{
+      res.json(null);
     }
   } catch (error) {
     console.error(error);

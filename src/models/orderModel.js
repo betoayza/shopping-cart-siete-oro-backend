@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-//import autoIncrement from 'mongoose-auto-increment-prefix';
 
 const { Schema } = mongoose;
 
@@ -9,24 +8,19 @@ const conn = mongoose.createConnection(URI);
 
 conn.once('open', () => {
     console.log('Connected to MongoDB');
-});
-                        
-//autoIncrement.initialize(connection);                        
+});                     
 
-const orderSchema = new Schema ({     
-    userID: {type: String, required: true},      
-    items: {type: Array, required: true},    
-    price: {type: Number, required: true},
-    state: {type: String, required: true}, 
-    date: {type: Date, required: true}    
+const orderSchema = new Schema ({  
+    code: {type: Number, required: true},   
+    userCode: {type: Number, required: true},      
+    products: {type: Array, default: [], required: true},    
+    amount: {type: Number, required: true},
+    date: {type: String, required: true},    
+    state: {type: String, required: true} 
 },{
     collection: 'orders'
 });
 
-//SchemaProduct.plugin(autoIncrement.plugin, 'code');
-//let code = connection.model('code', SchemaProduct);
+const Order = conn.model('Order', orderSchema); 
 
-const Order = conn.model('Order', orderSchema); //'producto' es el nombre del modelo;
-//Exportar el modelo de la base de datos con el esquema de productos
-//Servirá para conectarse y manipular la bds
 export default Order;
