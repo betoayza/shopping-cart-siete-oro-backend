@@ -229,9 +229,10 @@ router.get("/admin/product/search/:code", async (req, res) => {
 });
 
 //LOGIN & SIGNUP (working)
-router.post("/login", async (req, res) => {
+router.get("/api/login", async (req, res) => {
   try {
-    const { data, password } = req.body;
+    console.log(req.query);
+    const { data, password } = req.query;
     let doc = await UserModel.findOne({$and: [{$or: [{email: data}, {username: data}]}, { password }]}).exec();    
     if (doc) {
       res.json(doc);
