@@ -44,7 +44,7 @@ router.get("/admin/search/users/all", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await User.find({});
-    if (doc.length > 0) {
+    if (doc.length) {
       console.log(doc);
       res.json(doc);
     } else {
@@ -93,7 +93,7 @@ router.get("/admin/search/orders/all", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await OrderModel.find({});
-    if (doc.length > 0) {
+    if (doc.length) {
       console.log(doc);
       res.json(doc);
     } else {
@@ -124,7 +124,7 @@ router.get("/admin/search/orders/received", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await OrderModel.find({ status: "Entregado" });
-    if (doc.length > 0) {
+    if (doc.length) {
       console.log(doc);
       res.json(doc);
     } else {
@@ -139,7 +139,7 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await OrderModel.find({ status: "En camino" });
-    if (doc.length > 0) {
+    if (doc.length) {
       console.log(doc);
       res.json(doc);
     } else {
@@ -245,6 +245,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
+    console.log(req.body);
     const { email, username } = req.body;
     //if there are not users, create admin
     let doc = await UserModel.find({});        
@@ -319,6 +320,7 @@ router.put("/user/profile/edit", async (req, res) => {
 
 router.get("/user/orders/:code", async (req,res)=>{
   try {
+    console.log(req.params.code);
     const {code}=req.params.code;
     let doc=await OrderModel.findOne({code}).exec();
     if(doc){
