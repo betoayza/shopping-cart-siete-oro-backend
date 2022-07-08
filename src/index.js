@@ -22,7 +22,7 @@ app.use(
 );
 
 //cors support
-app.use(cors());
+app.use(cors({origin: true}));
 
 //Routes
 app.use(router);

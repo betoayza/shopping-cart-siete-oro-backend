@@ -8,12 +8,18 @@ import ShoppingCartModel from "../models/shoppingCartModel.js";
 
 const router = Router();
 
+router.get("/api", (req, res) => {
+  res.send("Server working on port 4000!");
+});
+
 //GENERIC ACTIONS
-router.get("/products/find/name", async (req, res) => {
+router.get("/api/products/get", async (req, res) => {
   try {
-    const { name } = req.query;
     console.log(req.query);
-    let doc = await ProductModel.find({ name });
+    const { name } = req.query;
+    let doc = await ProductModel.find({$or: [{
+      name: { $regex: `${name}`, $options: "i" },
+    }, {description: { $regex: `${name}`, $options: "i" }}]});
     if (doc.length) {
       console.log(doc);
       res.json(doc);
@@ -73,15 +79,15 @@ router.delete("/admin/user/delete/:code", async (req, res) => {
   }
 });
 
-router.get("/admin/user/search/:code", async (req, res)=>{
+router.get("/admin/user/search/:code", async (req, res) => {
   try {
     console.log(req.params.code);
-    const code=req.params.code;
-    let doc=await UserModel.findOne({ code }).exec();
-    if(doc){
+    const code = req.params.code;
+    let doc = await UserModel.findOne({ code }).exec();
+    if (doc) {
       console.log(doc);
       res.json(doc);
-    }else{
+    } else {
       res.json(null);
     }
   } catch (error) {
@@ -104,15 +110,15 @@ router.get("/admin/search/orders/all", async (req, res) => {
   }
 });
 
-router.get("/admin/search/order/:code", async (req, res)=>{
+router.get("/admin/search/order/:code", async (req, res) => {
   try {
     console.log(req.params.code);
-    const code=req.params.code;
-    let doc=await OrderModel.findOne({ code }).exec();
-    if(doc){
+    const code = req.params.code;
+    let doc = await OrderModel.findOne({ code }).exec();
+    if (doc) {
       console.log(doc);
       res.json(doc);
-    }else{
+    } else {
       res.json(null);
     }
   } catch (error) {
@@ -233,7 +239,9 @@ router.get("/api/login", async (req, res) => {
   try {
     console.log(req.query);
     const { data, password } = req.query;
-    let doc = await UserModel.findOne({$and: [{$or: [{email: data}, {username: data}]}, { password }]}).exec();    
+    let doc = await UserModel.findOne({
+      $and: [{ $or: [{ email: data }, { username: data }] }, { password }],
+    }).exec();
     if (doc) {
       res.json(doc);
     } else {
@@ -244,14 +252,14 @@ router.get("/api/login", async (req, res) => {
   }
 });
 
-router.post("/signup", async (req, res) => {
+router.post("/api/signup", async (req, res) => {
   try {
     console.log(req.body);
     const { email, username } = req.body;
     //if there are not users, create admin
-    let doc = await UserModel.find({});        
+    let doc = await UserModel.find({});
     if (!doc.length) {
-      const dataUser = { ...req.body };      
+      const dataUser = { ...req.body };
       dataUser.type = "Admin";
       const newUser = new UserModel(dataUser);
       doc = await newUser.save();
@@ -259,18 +267,22 @@ router.post("/signup", async (req, res) => {
       //if there are users, create an stardard user
     } else {
       //validate by email & username
-      doc = await UserModel.findOne({$or: [{ email }, { username }]}).exec();      
+      doc = await UserModel.findOne({ $or: [{ email }, { username }] }).exec();
       //if user exists do not register
       if (doc) {
         res.json(null);
-      } else {//otherwise, register user
-        const dataUser = { ...req.body };  
+      } else {
+        //otherwise, register user
+        const dataUser = { ...req.body };
         const newUser = new UserModel(dataUser);
         doc = await newUser.save();
         //create user shopping cart
-        const newShoppingCart=new ShoppingCartModel({code: doc.code, products: []}); //shopping cart code is user code
-        let doc2=await newShoppingCart.save();
-        console.log(doc2)
+        const newShoppingCart = new ShoppingCartModel({
+          code: doc.code,
+          products: [],
+        }); //shopping cart code is user code
+        let doc2 = await newShoppingCart.save();
+        console.log(doc2);
         //just response with new user
         res.json(doc);
       }
@@ -281,52 +293,37 @@ router.post("/signup", async (req, res) => {
 });
 
 //USER ROUTES
-router.put("/user/profile/edit", async (req, res) => {
+router.put("/api/user/profile/edit", async (req, res) => {
   try {
-    console.log(req.body.form);
+    console.log(req.body);
     const {
       code,
       name,
       lastName,
-      email,   
-      username,   
+      email,
+      username,
       password,
       address,
       neighborhood,
       phone,
       zip,
-    } = req.body.form;    
+    } = req.body;
 
     let doc = await UserModel.findOne({ code }).exec();
-    if(doc){
+    if (doc) {
       doc.name = name;
       doc.lastName = lastName;
       doc.email = email;
-      doc.username = username; 
+      doc.username = username;
       doc.password = password;
       doc.address = address;
       doc.neighborhood = neighborhood;
       doc.phone = phone;
       doc.zip = zip;
-  
-      doc = await doc.save();    
-      res.json(doc);
-    }else{
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);    
-  }
-});
 
-router.get("/user/orders/:code", async (req,res)=>{
-  try {
-    console.log(req.params.code);
-    const {code}=req.params.code;
-    let doc=await OrderModel.findOne({code}).exec();
-    if(doc){
+      doc = await doc.save();
       res.json(doc);
-    }else{
+    } else {
       res.json(null);
     }
   } catch (error) {
@@ -334,29 +331,44 @@ router.get("/user/orders/:code", async (req,res)=>{
   }
 });
 
-router.get('user/shopping-cart', async (req, res)=>{
-try {
-  console.log(req.query);
-  const {code}=req.query;
-  let doc=await ShoppingCartModel.findOne({code}).exec();
-  if(doc){
-    console.log(doc);
-    res.json(doc);
-  }else{
-    res.json(null);
+router.get("/api/user/orders/code", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { code } = req.query;
+    let doc = await OrderModel.findOne({ code }).exec();
+    if (doc) {
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
   }
-} catch (error) {
-  console.log(error);
-}
 });
 
-router.get("/user/orders/all", async (req,res)=>{
-  try {    
-    let doc=await OrderModel.find({});
-    if(doc.length){
+router.get("/api/user/shopping-cart", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { code } = req.query;
+    let doc = await ShoppingCartModel.findOne({ code }).exec();
+    if (doc) {
       console.log(doc);
       res.json(doc);
-    }else{
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.get("/api/user/orders/all", async (req, res) => {
+  try {
+    let doc = await OrderModel.find({});
+    if (doc.length) {
+      console.log(doc);
+      res.json(doc);
+    } else {
       res.json(null);
     }
   } catch (error) {
