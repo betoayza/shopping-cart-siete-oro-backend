@@ -84,11 +84,11 @@ router.delete("/admin/users/delete/:code", async (req, res) => {
   }
 });
 
-router.get("/admin/user/search/:code", async (req, res) => {
+router.get("/api/admin/products/search/code", async (req, res) => {
   try {
-    console.log(req.params.code);
-    const code = req.params.code;
-    let doc = await UserModel.findOne({ code }).exec();
+    console.log(req.query);
+    const { code } = req.query;
+    let doc = await ProductModel.findOne({ code }).exec();
     if (doc) {
       console.log(doc);
       res.json(doc);
