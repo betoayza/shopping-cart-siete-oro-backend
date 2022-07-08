@@ -17,9 +17,14 @@ router.get("/api/products/get", async (req, res) => {
   try {
     console.log(req.query);
     const { name } = req.query;
-    let doc = await ProductModel.find({$or: [{
-      name: { $regex: `${name}`, $options: "i" },
-    }, {description: { $regex: `${name}`, $options: "i" }}]});
+    let doc = await ProductModel.find({
+      $or: [
+        {
+          name: { $regex: `${name}`, $options: "i" },
+        },
+        { description: { $regex: `${name}`, $options: "i" } },
+      ],
+    });
     if (doc.length) {
       console.log(doc);
       res.json(doc);
@@ -31,7 +36,7 @@ router.get("/api/products/get", async (req, res) => {
   }
 });
 
-router.get("/products/all", async (req, res) => {
+router.get("/api/products/all", async (req, res) => {
   try {
     let doc = await ProductModel.find({});
     if (doc.length) {
@@ -61,7 +66,7 @@ router.get("/admin/search/users/all", async (req, res) => {
   }
 });
 
-router.delete("/admin/user/delete/:code", async (req, res) => {
+router.delete("/admin/users/delete/:code", async (req, res) => {
   try {
     console.log(req.params.code);
     const code = req.params.code;
@@ -200,15 +205,15 @@ router.put("/admin/product/modify", async (req, res) => {
   }
 });
 
-router.delete("/admin/product/delete/:code", async (req, res) => {
+router.delete("/api/admin/products/delete", async (req, res) => {
   try {
-    console.log(req.params.code);
-    const code = req.params.code;
+    console.log(req.body);
+    const { code } = req.body;
     let doc = await ProductModel.findOne({ code }).exec();
     if (doc) {
       console.log(doc);
-      doc.status = "Inactive";
-      let doc = await doc.save();
+      doc.status = "Dado de baja";
+      doc = await doc.save();
       res.json(doc);
     } else {
       res.json(null);
