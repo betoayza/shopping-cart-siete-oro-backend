@@ -3,8 +3,6 @@ import ProductModel from "../models/productModel.js";
 import OrderModel from "../models/orderModel.js";
 import UserModel from "../models/userModel.js";
 import ShoppingCartModel from "../models/shoppingCartModel.js";
-// import multer from 'multer';
-// const upload = multer({ dest: './public/data/uploads/' })
 
 const router = Router();
 
@@ -84,22 +82,6 @@ router.delete("/admin/users/delete/:code", async (req, res) => {
   }
 });
 
-router.get("/api/admin/products/search/code", async (req, res) => {
-  try {
-    console.log(req.query);
-    const { code } = req.query;
-    let doc = await ProductModel.findOne({ code }).exec();
-    if (doc) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 router.get("/admin/search/orders/all", async (req, res) => {
   try {
     console.log(req.query);
@@ -161,27 +143,21 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
   }
 });
 
-router.post("/admin/product/add", async (req, res) => {
-  // upload.single('image')
+router.get("/api/admin/products/search/code", async (req, res) => {
   try {
-    console.log(req.body);
-    console.log("File: ", req.file);
-    console.log(req.body);
-    const { code } = req.body;
-    //validate product
+    console.log(req.query);
+    const { code } = req.query;
     let doc = await ProductModel.findOne({ code }).exec();
-    //If not matches, add product
     if (doc) {
-      res.json(null);
-    } else {
-      const newProduct = new ProductModel(req.body);
-      await newProduct.save();
+      console.log(doc);
       res.json(doc);
+    } else {
+      res.json(null);
     }
   } catch (error) {
     console.error(error);
   }
-}); //Pediente
+}); //pendiente
 
 router.put("/admin/product/modify", async (req, res) => {
   try {
