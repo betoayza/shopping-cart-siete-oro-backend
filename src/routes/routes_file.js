@@ -3,6 +3,12 @@ import ProductModel from "../models/productModel.js";
 import OrderModel from "../models/orderModel.js";
 import UserModel from "../models/userModel.js";
 import ShoppingCartModel from "../models/shoppingCartModel.js";
+import multer from "multer";
+
+const upload = multer({
+  dest: "src/uploads",
+  limits: { fieldSize: 400 * 400 },
+});
 
 const router = Router();
 
@@ -142,6 +148,41 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
     console.error(error);
   }
 });
+
+router.post(
+  "/api/admin/product/add",
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      console.log(req.file); //image
+      console.log(req.body); //rest inputs
+
+      const { code } = req.body;
+      //validate product
+      let doc = await ProductModel.findOne({ code }).exec();
+      //If not matches, add product
+      if (doc) {
+        res.json(null);
+      } else {
+        const { name, description, price, stock, status } = req.body;
+        
+        const newProduct = new ProductModel({
+          code,
+          name,
+          description,
+          price,
+          stock,
+          imageURL: req.file.path,
+          status,
+        });
+        doc = await newProduct.save();
+        res.json(doc);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+); //Pediente
 
 router.get("/api/admin/products/search/code", async (req, res) => {
   try {
