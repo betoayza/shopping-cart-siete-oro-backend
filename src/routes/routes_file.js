@@ -5,9 +5,9 @@ import UserModel from "../models/userModel.js";
 import ShoppingCartModel from "../models/shoppingCartModel.js";
 import multer from "multer";
 
+const storage = multer.memoryStorage();
 const upload = multer({
-  dest: "src/uploads",
-  limits: { fieldSize: 400 * 400 },
+  storage: storage,
 });
 
 const router = Router();
@@ -160,19 +160,20 @@ router.post(
       const { code } = req.body;
       //validate product
       let doc = await ProductModel.findOne({ code }).exec();
-      //If not matches, add product
       if (doc) {
         res.json(null);
       } else {
+        //If not matches, add product
         const { name, description, price, stock, status } = req.body;
-        
+        //const {destination, originalname}=req.file;
+
         const newProduct = new ProductModel({
           code,
           name,
           description,
           price,
           stock,
-          imageURL: req.file.path,
+          image: req.file.buffer,
           status,
         });
         doc = await newProduct.save();
@@ -180,9 +181,10 @@ router.post(
       }
     } catch (error) {
       console.error(error);
+      res.json(null);
     }
   }
-); //Pediente
+); //working
 
 router.get("/api/admin/products/search/code", async (req, res) => {
   try {
