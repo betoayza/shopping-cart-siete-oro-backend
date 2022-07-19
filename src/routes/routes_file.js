@@ -240,12 +240,12 @@ router.delete("/api/admin/products/delete", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
-router.get("/admin/product/search/:code", async (req, res) => {
+router.get("/admin/product/search", async (req, res) => {
   try {
-    console.log(req.params.ProductModel);
-    const code = req.params.code;
+    console.log(req.query);
+    const code = req.query;
     let doc = await ProductModel.findOne({ code }).exec();
     if (doc) {
       console.log(doc);
@@ -256,7 +256,7 @@ router.get("/admin/product/search/:code", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); 
 
 //LOGIN & SIGNUP (working)
 router.get("/api/login", async (req, res) => {
