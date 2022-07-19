@@ -242,11 +242,13 @@ router.delete("/api/admin/products/delete", async (req, res) => {
   }
 }); //working
 
-router.get("/admin/product/search", async (req, res) => {
+router.get("/api/admin/product/search", async (req, res) => {
   try {
     console.log(req.query);
-    const code = req.query;
-    let doc = await ProductModel.findOne({ code }).exec();
+    const { code } = req.query;
+    let doc = await ProductModel.findOne({
+      $and: [{ code }, { status: "Activo" }],
+    }).exec();
     if (doc) {
       console.log(doc);
       res.json(doc);
@@ -256,7 +258,7 @@ router.get("/admin/product/search", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-}); 
+}); //working
 
 //LOGIN & SIGNUP (working)
 router.get("/api/login", async (req, res) => {
