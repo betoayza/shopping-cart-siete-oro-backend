@@ -149,6 +149,7 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
   }
 });
 
+//Working for Add & Modify products
 router.post(
   "/api/admin/product/add",
   upload.single("image"),
@@ -186,11 +187,44 @@ router.post(
   }
 ); //working
 
+router.put(
+  "/api/admin/product/modify",
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      console.log(req.file); //image
+      console.log(req.body); //rest inputs
+
+      const { code } = req.body;
+      //validate product
+      let doc = await ProductModel.findOne({ code }).exec();
+      if (doc) {
+        const { name, description, price, stock } = req.body;
+        doc.name=name;
+        doc.description=description;
+        doc.price=price;
+        doc.stock=stock;
+        doc.image=req.file.buffer; 
+
+        doc = await doc.save();
+        res.json(doc);
+      } else {        
+        res.json(null);
+      }
+    } catch (error) {
+      console.error(error);
+      res.json(null);
+    }
+  }
+);
+
 router.get("/api/admin/products/search/code", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
-    let doc = await ProductModel.findOne({ code }).exec();
+    let doc = await ProductModel.findOne({
+      $and: [{ code }, { status: "Activo" }],
+    }).exec();
     if (doc) {
       console.log(doc);
       res.json(doc);
@@ -201,28 +235,6 @@ router.get("/api/admin/products/search/code", async (req, res) => {
     console.error(error);
   }
 }); //pendiente
-
-router.put("/admin/product/modify", async (req, res) => {
-  try {
-    console.log(req.body);
-    const { code, name, description, price, stock, image } = req.body;
-    let doc = await ProductModel.findOne({ code }).exec();
-    if (doc) {
-      console.log(doc);
-      doc.name = name;
-      doc.description = description;
-      doc.price = price;
-      doc.stock = stock;
-      doc.image = image;
-      doc = await doc.save();
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
 
 router.delete("/api/admin/products/delete", async (req, res) => {
   try {
