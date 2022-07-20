@@ -55,7 +55,7 @@ router.get("/api/products/all", async (req, res) => {
 });
 
 //ADMIN ROUTES
-router.get("/admin/search/users/all", async (req, res) => {
+router.get("/admin/users/all", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await User.find({});
@@ -103,7 +103,7 @@ router.get("/admin/search/orders/all", async (req, res) => {
   }
 });
 
-router.get("/admin/search/order/:code", async (req, res) => {
+router.get("/admin/orders/search", async (req, res) => {
   try {
     console.log(req.params.code);
     const code = req.params.code;
@@ -149,7 +149,6 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
   }
 });
 
-//Working for Add & Modify products
 router.post(
   "/api/admin/product/add",
   upload.single("image"),
@@ -216,25 +215,7 @@ router.put(
       res.json(null);
     }
   }
-);
-
-router.get("/api/admin/products/search/code", async (req, res) => {
-  try {
-    console.log(req.query);
-    const { code } = req.query;
-    let doc = await ProductModel.findOne({
-      $and: [{ code }, { status: "Activo" }],
-    }).exec();
-    if (doc) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}); //pendiente
+); //working
 
 router.delete("/api/admin/products/delete", async (req, res) => {
   try {
@@ -254,7 +235,7 @@ router.delete("/api/admin/products/delete", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/product/search", async (req, res) => {
+router.get("/api/admin/products/search", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
