@@ -68,9 +68,28 @@ router.get("/api/admin/users/all", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
+}); //working
+
+router.get("/api/admin/users/code", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { code } = req.query;
+    let doc = await UserModel.findOne({
+      $and: [{ code }, { status: "Activo" }],
+    }).exec();
+    if (doc) {
+      console.log(doc);
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    res.json(null);
+  }
 });
 
-router.delete("/admin/users/delete/:code", async (req, res) => {
+router.delete("/admin/users/delete", async (req, res) => {
   try {
     console.log(req.params.code);
     const code = req.params.code;
