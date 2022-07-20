@@ -55,10 +55,10 @@ router.get("/api/products/all", async (req, res) => {
 });
 
 //ADMIN ROUTES
-router.get("/admin/users/all", async (req, res) => {
+router.get("/api/admin/users/all", async (req, res) => {
   try {
     console.log(req.query);
-    let doc = await User.find({});
+    let doc = await UserModel.find({});
     if (doc.length) {
       console.log(doc);
       res.json(doc);
@@ -199,15 +199,15 @@ router.put(
       let doc = await ProductModel.findOne({ code }).exec();
       if (doc) {
         const { name, description, price, stock } = req.body;
-        doc.name=name;
-        doc.description=description;
-        doc.price=price;
-        doc.stock=stock;
-        doc.image=req.file.buffer; 
+        doc.name = name;
+        doc.description = description;
+        doc.price = price;
+        doc.stock = stock;
+        doc.image = req.file.buffer;
 
         doc = await doc.save();
         res.json(doc);
-      } else {        
+      } else {
         res.json(null);
       }
     } catch (error) {
