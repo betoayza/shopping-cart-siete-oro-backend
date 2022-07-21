@@ -89,14 +89,16 @@ router.get("/api/admin/users/code", async (req, res) => {
   }
 });
 
-router.delete("/admin/users/delete", async (req, res) => {
+router.delete("/api/admin/users/delete", async (req, res) => {
   try {
-    console.log(req.params.code);
-    const code = req.params.code;
-    let doc = await UserModel.findOne({ code }).exec();
+    console.log(req.body);
+    const { code } = req.body;
+    let doc = await UserModel.findOne({
+      $and: [{ code }, { status: "Activo" }],
+    }).exec();
     if (doc) {
       console.log(doc);
-      doc.status = "Inactive";
+      doc.status = "Inactivo";
       doc = await doc.save();
       res.json(doc);
     } else {
