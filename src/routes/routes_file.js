@@ -112,7 +112,7 @@ router.delete("/api/admin/users/delete", async (req, res) => {
 //--------ORDERS
 
 router.get("/api/admin/orders/all", async (req, res) => {
-  try {    
+  try {
     let doc = await OrderModel.find({});
     if (doc.length) {
       console.log(doc);
@@ -123,13 +123,15 @@ router.get("/api/admin/orders/all", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-}); 
+}); //working
 
-router.get("/admin/orders/search", async (req, res) => {
+router.get("/api/admin/orders/code", async (req, res) => {
   try {
-    console.log(req.params.code);
-    const code = req.params.code;
-    let doc = await OrderModel.findOne({ code }).exec();
+    console.log(req.query);
+    const { code } = req.query;
+    let doc = await OrderModel.findOne({
+      $and: [{ code }, { status: "Activo" }],
+    }).exec();
     if (doc) {
       console.log(doc);
       res.json(doc);
