@@ -54,7 +54,7 @@ router.get("/api/products/all", async (req, res) => {
   }
 });
 
-//ADMIN ROUTES
+//USERS
 router.get("/api/admin/users/all", async (req, res) => {
   try {
     console.log(req.query);
@@ -109,9 +109,10 @@ router.delete("/api/admin/users/delete", async (req, res) => {
   }
 });
 
-router.get("/admin/search/orders/all", async (req, res) => {
-  try {
-    console.log(req.query);
+//--------ORDERS
+
+router.get("/api/admin/orders/all", async (req, res) => {
+  try {    
     let doc = await OrderModel.find({});
     if (doc.length) {
       console.log(doc);
@@ -122,7 +123,7 @@ router.get("/admin/search/orders/all", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); 
 
 router.get("/admin/orders/search", async (req, res) => {
   try {

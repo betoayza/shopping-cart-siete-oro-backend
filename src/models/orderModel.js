@@ -16,7 +16,7 @@ const orderSchema = new Schema ({
     products: {type: Array, default: [], required: true},    
     amount: {type: Number, required: true},
     date: {type: String, required: true},    
-    state: {type: String, required: true} 
+    status: {type: String, required: true} 
 },{
     collection: 'orders'
 });
