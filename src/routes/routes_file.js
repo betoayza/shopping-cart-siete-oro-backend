@@ -70,7 +70,7 @@ router.get("/api/admin/users/all", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/users/code", async (req, res) => {
+router.get("/api/admin/users/search", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -87,7 +87,7 @@ router.get("/api/admin/users/code", async (req, res) => {
     console.error(error);
     res.json(null);
   }
-});
+}); //working
 
 router.delete("/api/admin/users/delete", async (req, res) => {
   try {
@@ -336,7 +336,7 @@ router.post("/api/signup", async (req, res) => {
 });
 
 //USER ROUTES
-router.put("/api/user/profile/edit", async (req, res) => {
+router.put("/api/user/profile/modify", async (req, res) => {
   try {
     console.log(req.body);
     const {
@@ -370,6 +370,7 @@ router.put("/api/user/profile/edit", async (req, res) => {
       res.json(null);
     }
   } catch (error) {
+    res.json(null);
     console.error(error);
   }
 });
