@@ -375,7 +375,7 @@ router.put("/api/user/profile/modify", async (req, res) => {
   }
 });
 
-router.get("/api/user/orders/code", async (req, res) => {
+router.get("/api/user/orders/search", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -406,9 +406,13 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   }
 });
 
-router.get("/api/user/orders/all", async (req, res) => {
+router.get("/api/user/orders", async (req, res) => {
   try {
-    let doc = await OrderModel.find({});
+    console.log(req.query);
+    const { code } = req.query;
+    console.log(code);
+
+    let doc = await OrderModel.find({ userCode: code });
     if (doc.length) {
       console.log(doc);
       res.json(doc);
