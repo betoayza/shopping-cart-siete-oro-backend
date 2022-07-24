@@ -394,7 +394,7 @@ router.get("/api/user/orders/code", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.get("/api/user/shopping-cart", async (req, res) => {
   try {
