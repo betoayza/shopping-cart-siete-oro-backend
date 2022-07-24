@@ -375,12 +375,18 @@ router.put("/api/user/profile/modify", async (req, res) => {
   }
 });
 
-router.get("/api/user/orders/search", async (req, res) => {
+router.get("/api/user/orders/code", async (req, res) => {
   try {
     console.log(req.query);
-    const { code } = req.query;
-    let doc = await OrderModel.findOne({ code }).exec();
+    const { orderCode, userCode } = req.query;
+    console.log(orderCode);
+    console.log(userCode);
+
+    let doc = await OrderModel.findOne({
+      $and: [{ code: orderCode }, { userCode }],
+    }).exec();
     if (doc) {
+      console.log(doc);
       res.json(doc);
     } else {
       res.json(null);
@@ -406,12 +412,11 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   }
 });
 
-router.get("/api/user/orders", async (req, res) => {
+router.get("/api/user/orders/all", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
     console.log(code);
-
     let doc = await OrderModel.find({ userCode: code });
     if (doc.length) {
       console.log(doc);
@@ -422,6 +427,6 @@ router.get("/api/user/orders", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 export default router;
