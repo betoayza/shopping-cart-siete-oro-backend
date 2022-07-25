@@ -396,6 +396,26 @@ router.get("/api/user/orders/code", async (req, res) => {
   }
 }); //working
 
+router.delete("/api/user/orders/delete", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { code, userCode } = req.body;
+    let doc = await OrderModel.findOne({
+      $and: [{ code }, { userCode }, { status: "Activo" }],
+    }).exec();
+    if (doc) {
+      console.log(doc);
+      doc.status = "Dado de baja";
+      doc = doc.save();
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.get("/api/user/shopping-cart", async (req, res) => {
   try {
     console.log(req.query);
