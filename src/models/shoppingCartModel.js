@@ -13,7 +13,7 @@ conn.once("open", () => {
 
 const ShoppingCartSchema = new Schema(
   {
-    code: { type: Number, required: true },   
+    code: { type: Number, required: true }, //code=userCode  
     products: { type: Array, default: [] },
   },
   {

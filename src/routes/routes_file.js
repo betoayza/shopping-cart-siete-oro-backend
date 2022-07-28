@@ -416,22 +416,6 @@ router.delete("/api/user/orders/delete", async (req, res) => {
   }
 });
 
-router.get("/api/user/shopping-cart", async (req, res) => {
-  try {
-    console.log(req.query);
-    const { code } = req.query;
-    let doc = await ShoppingCartModel.findOne({ code }).exec();
-    if (doc) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 router.get("/api/user/orders/all", async (req, res) => {
   try {
     console.log(req.query);
@@ -448,5 +432,68 @@ router.get("/api/user/orders/all", async (req, res) => {
     console.error(error);
   }
 }); //working
+
+//USER SHOPPING CART
+router.get("/api/user/shopping-cart", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { userCode } = req.query;
+    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
+    if (doc) {
+      console.log(doc);
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}); //working
+
+router.delete(`/api/user/shopping-cart/delete`, async (req, res)=>{
+  try {
+    console.log(req.body);
+    const {prodCode, userCode}=req.body;
+    let doc = await ShoppingCartModel.findOne({code: userCode}).exec();
+  } catch (error) {
+    console.error();
+  }
+});
+
+router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { userCode } = req.query;
+    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
+    if (doc) {
+      console.log(doc);
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.put("/api/user/shopping-cart/add", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { productCode, userCode } = req.body;
+    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
+    let doc2 = await ProductModel.findOne({
+      $and: [{ code: productCode }, { status: "Activo" }],
+    }).exec();
+    if (doc && doc2) {
+      doc.products.push(doc2);
+      doc= doc.save();
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 export default router;
