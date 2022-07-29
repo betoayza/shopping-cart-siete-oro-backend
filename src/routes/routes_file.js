@@ -22,11 +22,16 @@ router.get("/api/products/get", async (req, res) => {
     console.log(req.query);
     const { name } = req.query;
     let doc = await ProductModel.find({
-      $or: [
+      $and: [
         {
-          name: { $regex: `${name}`, $options: "i" },
+          $or: [
+            {
+              name: { $regex: `${name}`, $options: "i" },
+            },
+            { description: { $regex: `${name}`, $options: "i" } },
+          ],
         },
-        { description: { $regex: `${name}`, $options: "i" } },
+        { status: "Activo" },
       ],
     });
     if (doc.length) {
@@ -450,11 +455,19 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   }
 }); //working
 
-router.delete(`/api/user/shopping-cart/delete`, async (req, res)=>{
+router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   try {
     console.log(req.body);
-    const {prodCode, userCode}=req.body;
-    let doc = await ShoppingCartModel.findOne({code: userCode}).exec();
+    const { prodCode, userCode } = req.body;
+    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec(); //validate shopping cart
+    let doc2 = await ProductModel.findOne({ code: prodCode }).exec(); //validate product
+    if (doc && doc2) {
+      doc.products.pull(doc2);
+      doc = await doc.save();
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
   } catch (error) {
     console.error();
   }
@@ -486,7 +499,7 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
     }).exec();
     if (doc && doc2) {
       doc.products.push(doc2);
-      doc= doc.save();
+      doc = doc.save();
       res.json(doc);
     } else {
       res.json(null);
