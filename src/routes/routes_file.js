@@ -464,6 +464,7 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
     if (doc && doc2) {
       doc.products.pull(doc2);
       doc = await doc.save();
+      console.log(doc);
       res.json(doc);
     } else {
       res.json(null);
