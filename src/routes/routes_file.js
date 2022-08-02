@@ -462,15 +462,28 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
     let doc = await ShoppingCartModel.findOne({ code: userCode }).exec(); //validate shopping cart
     let doc2 = await ProductModel.findOne({ code: prodCode }).exec(); //validate product
     if (doc && doc2) {
-      doc.products.pull(doc2);
-      doc = await doc.save();
+      doc = await ShoppingCartModel.updateOne(
+        { code: userCode },
+        {
+          $pull: {
+            products: {
+              code: prodCode,
+            },
+          },
+        }
+      );
+      //doc.products = await ProductModel.deleteOne({ code: prodCode });
+      //doc.products.pull(doc2);
+      //doc = await doc.save();
+      console.log(doc);
+      doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
       console.log(doc);
       res.json(doc);
     } else {
       res.json(null);
     }
   } catch (error) {
-    console.error();
+    console.error(error);
   }
 });
 
