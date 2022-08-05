@@ -193,7 +193,7 @@ router.post(
         res.json(null);
       } else {
         //If not matches, add product
-        const { name, description, price, stock, status } = req.body;
+        const { name, description, price, stock, toBuy, status } = req.body;
         //const {destination, originalname}=req.file;
 
         const newProduct = new ProductModel({
@@ -203,6 +203,7 @@ router.post(
           price,
           stock,
           image: req.file.buffer,
+          toBuy,
           status,
         });
         doc = await newProduct.save();
@@ -458,24 +459,25 @@ router.get("/api/user/shopping-cart", async (req, res) => {
 router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   try {
     console.log(req.body);
-    const { prodCode, userCode } = req.body;
+    const { prodCode, userCode, index } = req.body;
     let doc = await ShoppingCartModel.findOne({ code: userCode }).exec(); //validate shopping cart
     let doc2 = await ProductModel.findOne({ code: prodCode }).exec(); //validate product
     if (doc && doc2) {
+      //await doc.products.pull({ "products.$": index });
+
+      // doc = await ShoppingCartModel.updateOne(
+      //   { code: userCode },
+      //   { $pull: { products: { [`products.${index}`] } } }
+      // );
+      //doc = await ShoppingCartModel.findOne({ code: prodCode }).exec();
+
+      // ["doc.products.${index}: null"];
       doc = await ShoppingCartModel.updateOne(
-        { code: userCode },
-        {
-          $pull: {
-            products: {
-              code: prodCode,
-            },
-          },
-        }
+        { code: prodCode },
+        { $set: { "products.${index}": null } }
       );
-      //doc.products = await ProductModel.deleteOne({ code: prodCode });
-      //doc.products.pull(doc2);
       //doc = await doc.save();
-      console.log(doc);
+      //console.log(doc);
       doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
       console.log(doc);
       res.json(doc);
@@ -507,11 +509,14 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
   try {
     console.log(req.body);
     const { productCode, userCode } = req.body;
+    
     let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
     let doc2 = await ProductModel.findOne({
       $and: [{ code: productCode }, { status: "Activo" }],
     }).exec();
-    if (doc && doc2) {
+    let doc3 = await ShoppingCartModel.findOne({'products': {$elemMatch: {code: productCode}}}).exec();
+    
+    if (doc && doc2 && !doc3) {
       doc.products.push(doc2);
       doc = doc.save();
       res.json(doc);
