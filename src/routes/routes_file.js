@@ -459,25 +459,17 @@ router.get("/api/user/shopping-cart", async (req, res) => {
 router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   try {
     console.log(req.body);
-    const { prodCode, userCode, index } = req.body;
+    const { prodCode, userCode } = req.body;
     let doc = await ShoppingCartModel.findOne({ code: userCode }).exec(); //validate shopping cart
     let doc2 = await ProductModel.findOne({ code: prodCode }).exec(); //validate product
     if (doc && doc2) {
-      //await doc.products.pull({ "products.$": index });
-
-      // doc = await ShoppingCartModel.updateOne(
-      //   { code: userCode },
-      //   { $pull: { products: { [`products.${index}`] } } }
-      // );
-      //doc = await ShoppingCartModel.findOne({ code: prodCode }).exec();
-
-      // ["doc.products.${index}: null"];
+      //maked delete
       doc = await ShoppingCartModel.updateOne(
-        { code: prodCode },
-        { $set: { "products.${index}": null } }
+        { code: userCode },
+        { $pull: { products: { code: prodCode } } }
       );
-      //doc = await doc.save();
-      //console.log(doc);
+      console.log(doc);
+      //returns shopping cart updated      
       doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
       console.log(doc);
       res.json(doc);
@@ -509,13 +501,15 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
   try {
     console.log(req.body);
     const { productCode, userCode } = req.body;
-    
+
     let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
     let doc2 = await ProductModel.findOne({
       $and: [{ code: productCode }, { status: "Activo" }],
     }).exec();
-    let doc3 = await ShoppingCartModel.findOne({'products': {$elemMatch: {code: productCode}}}).exec();
-    
+    let doc3 = await ShoppingCartModel.findOne({
+      products: { $elemMatch: { code: productCode } },
+    }).exec();
+
     if (doc && doc2 && !doc3) {
       doc.products.push(doc2);
       doc = doc.save();
@@ -526,6 +520,6 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 export default router;
