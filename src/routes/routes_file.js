@@ -469,7 +469,7 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
         { $pull: { products: { code: prodCode } } }
       );
       console.log(doc);
-      //returns shopping cart updated      
+      //returns shopping cart updated
       doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
       console.log(doc);
       res.json(doc);
@@ -479,15 +479,21 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
   try {
-    console.log(req.query);
-    const { userCode } = req.query;
+    console.log(req.body);
+    const { userCode } = req.body;
     let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
     if (doc) {
       console.log(doc);
+      await ShoppingCartModel.updateOne(
+        { code: userCode },
+        { $pull: { products: {} } }
+      );
+      //returns shopping cart updated
+      doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
       res.json(doc);
     } else {
       res.json(null);
