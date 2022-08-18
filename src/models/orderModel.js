@@ -13,7 +13,7 @@ conn.once('open', () => {
 const orderSchema = new Schema ({  
     code: {type: Number, required: true},   
     userCode: {type: Number, required: true},      
-    products: {type: Array, default: [], required: true},    
+    products: {type: Array, default: []},    
     amount: {type: Number, required: true},
     date: {type: String, required: true},    
     status: {type: String, required: true} 

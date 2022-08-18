@@ -57,7 +57,7 @@ router.get("/api/products/all", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 //USERS
 router.get("/api/admin/users/all", async (req, res) => {
@@ -186,9 +186,17 @@ router.post(
       console.log(req.file); //image
       console.log(req.body); //rest inputs
 
-      const { code } = req.body;
+      const { code, name, description, status } = req.body;
       //validate product
-      let doc = await ProductModel.findOne({ code }).exec();
+      let doc = await ProductModel.findOne({
+        $and: [
+          {
+            $or: [{ code }, { name }],
+          },
+          { description },
+          { status },
+        ],
+      }).exec();
       if (doc) {
         res.json(null);
       } else {
@@ -251,7 +259,9 @@ router.delete("/api/admin/products/delete", async (req, res) => {
   try {
     console.log(req.body);
     const { code } = req.body;
-    let doc = await ProductModel.findOne({ code }).exec();
+    let doc = await ProductModel.findOne({
+      $and: [{ code }, { status: "Activo" }],
+    }).exec();
     if (doc) {
       console.log(doc);
       doc.status = "Dado de baja";
@@ -265,7 +275,7 @@ router.delete("/api/admin/products/delete", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/products/search", async (req, res) => {
+router.get("/api/admin/products/search/code", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -402,6 +412,17 @@ router.get("/api/user/orders/code", async (req, res) => {
   }
 }); //working
 
+router.post("/api/user/orders/add", async (req, res) => {
+  try {
+    // console.log(req.body);
+    // const {products, userCode}=req.body;
+    // const newOrder = new OrderModel({code: Date.now(), userCode, products, amount, date, status: "Active"});
+    // let doc= await OrderModel.save
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.delete("/api/user/orders/delete", async (req, res) => {
   try {
     console.log(req.body);
@@ -498,6 +519,21 @@ router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
     } else {
       res.json(null);
     }
+  } catch (error) {
+    console.error(error);
+  }
+}); //working
+
+router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
+  try {
+    console.log("asd: ", req.body);
+    const { userCode, toBuy, itemIndex } = req.body;
+    let doc = await ShoppingCartModel.updateOne(
+      { code: userCode },
+      { $set: { [`products.${itemIndex}.toBuy`]: toBuy } }
+    );
+    console.log(doc);
+    res.json(doc);
   } catch (error) {
     console.error(error);
   }
