@@ -239,7 +239,7 @@ router.put("/api/admin/products/activate", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.put(
   "/api/admin/product/modify",
