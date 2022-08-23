@@ -224,6 +224,23 @@ router.post(
   }
 ); //working
 
+router.put("/api/admin/products/activate", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { code } = req.body;
+    let doc = await ProductModel.findOne({
+      $and: [{ code }, { status: "Dado de baja" }],
+    }).exec();
+    if (doc) {
+      doc.status = "Activo";
+      doc = await doc.save();
+      res.json(doc);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.put(
   "/api/admin/product/modify",
   upload.single("image"),
