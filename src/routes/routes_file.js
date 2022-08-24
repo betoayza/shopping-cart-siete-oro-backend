@@ -103,7 +103,26 @@ router.delete("/api/admin/users/delete", async (req, res) => {
     }).exec();
     if (doc) {
       console.log(doc);
-      doc.status = "Inactivo";
+      doc.status = "Banneado";
+      doc = await doc.save();
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}); //working
+
+router.put("/api/admin/users/activate", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { code } = req.body;
+    let doc = await UserModel.findOne({
+      $and: [{ code }, { status: "Banneado" }],
+    }).exec();
+    if (doc) {
+      doc.status = "Activo";
       doc = await doc.save();
       res.json(doc);
     } else {
