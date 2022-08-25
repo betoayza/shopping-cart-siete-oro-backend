@@ -15,49 +15,7 @@ const router = Router();
 router.get("/api", (req, res) => {
   res.send("Server working on port 4000!");
 });
-
-//GENERIC ACTIONS
-router.get("/api/products/get", async (req, res) => {
-  try {
-    console.log(req.query);
-    const { name } = req.query;
-    let doc = await ProductModel.find({
-      $and: [
-        {
-          $or: [
-            {
-              name: { $regex: `${name}`, $options: "i" },
-            },
-            { description: { $regex: `${name}`, $options: "i" } },
-          ],
-        },
-        { status: "Activo" },
-      ],
-    });
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-router.get("/api/products/all", async (req, res) => {
-  try {
-    let doc = await ProductModel.find({});
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}); //working
+//---------------ADMIN ROUTES----------------------
 
 //USERS
 router.get("/api/admin/users/all", async (req, res) => {
@@ -79,9 +37,7 @@ router.get("/api/admin/users/search", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
-    let doc = await UserModel.findOne({
-      $and: [{ code }, { status: "Activo" }],
-    }).exec();
+    let doc = await UserModel.findOne({ code }).exec();
     if (doc) {
       console.log(doc);
       res.json(doc);
@@ -131,9 +87,9 @@ router.put("/api/admin/users/activate", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
-//--------ORDERS
+//ORDERS
 
 router.get("/api/admin/orders/all", async (req, res) => {
   try {
@@ -196,6 +152,21 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
     console.error(error);
   }
 });
+
+//PRODUCTS
+router.get("/api/products/all", async (req, res) => {
+  try {
+    let doc = await ProductModel.find({});
+    if (doc.length) {
+      console.log(doc);
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}); //working
 
 router.post(
   "/api/admin/product/add",
@@ -316,7 +287,7 @@ router.get("/api/admin/products/search/code", async (req, res) => {
     console.log(req.query);
     const { code } = req.query;
     let doc = await ProductModel.findOne({
-      $and: [{ code }, { status: "Activo" }],
+      code,
     }).exec();
     if (doc) {
       console.log(doc);
@@ -328,6 +299,8 @@ router.get("/api/admin/products/search/code", async (req, res) => {
     console.error(error);
   }
 }); //working
+
+//-----------------LOGIN & SIGNUP-----------------------
 
 //LOGIN & SIGNUP (working)
 router.get("/api/login", async (req, res) => {
@@ -387,7 +360,38 @@ router.post("/api/signup", async (req, res) => {
   }
 });
 
-//USER ROUTES
+//-------------------USER ROUTES-------------------------------
+
+//PRODUCTS
+router.get("/api/products/get", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { name } = req.query;
+    let doc = await ProductModel.find({
+      $and: [
+        {
+          $or: [
+            {
+              name: { $regex: `${name}`, $options: "i" },
+            },
+            { description: { $regex: `${name}`, $options: "i" } },
+          ],
+        },
+        { status: "Activo" },
+      ],
+    });
+    if (doc.length) {
+      console.log(doc);
+      res.json(doc);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+//PROFILE
 router.put("/api/user/profile/modify", async (req, res) => {
   try {
     console.log(req.body);
@@ -427,6 +431,7 @@ router.put("/api/user/profile/modify", async (req, res) => {
   }
 });
 
+//ORDERS
 router.get("/api/user/orders/code", async (req, res) => {
   try {
     console.log(req.query);
@@ -496,7 +501,7 @@ router.get("/api/user/orders/all", async (req, res) => {
   }
 }); //working
 
-//USER SHOPPING CART
+//SHOPPING CART
 router.get("/api/user/shopping-cart", async (req, res) => {
   try {
     console.log(req.query);
