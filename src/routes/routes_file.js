@@ -168,6 +168,32 @@ router.get("/api/products/all", async (req, res) => {
   }
 }); //working
 
+router.get("/api/admin/products/search", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { term } = req.query;
+    let termNumber = null;
+    isNaN(Number(term)) ? term : (termNumber = Number(term));
+
+    let products = await ProductModel.find({
+      $or: [
+        { code: termNumber },
+        { name: { $regex: `${term}`, $options: "i" } },
+        { description: { $regex: `${term}`, $options: "i" } },
+        { price: termNumber },
+        { stock: termNumber },
+        { status: { $regex: `${term}`, $options: "i" } },
+      ],
+    });
+
+    if (products.length) {
+      res.json(products);
+    } else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.post(
   "/api/admin/product/add",
   upload.single("image"),
