@@ -466,7 +466,7 @@ router.get("/api/products/get", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 //PROFILE
 router.put("/api/user/profile/modify", async (req, res) => {
@@ -583,10 +583,9 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   try {
     console.log(req.query);
     const { userCode } = req.query;
-    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
-    if (doc) {
-      console.log(doc);
-      res.json(doc);
+    let shoppingCart = await ShoppingCartModel.findOne({ code: userCode }).exec();
+    if (shoppingCart.products) {     
+      res.json(shoppingCart);
     } else {
       res.json(null);
     }
