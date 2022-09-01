@@ -468,7 +468,7 @@ router.get("/api/products/get", async (req, res) => {
   }
 }); //working
 
-//PROFILE
+//EDIT PROFILE
 router.put("/api/user/profile/modify", async (req, res) => {
   try {
     console.log(req.body);
@@ -485,20 +485,23 @@ router.put("/api/user/profile/modify", async (req, res) => {
       zip,
     } = req.body;
 
-    let doc = await UserModel.findOne({ code }).exec();
-    if (doc) {
-      doc.name = name;
-      doc.lastName = lastName;
-      doc.email = email;
-      doc.username = username;
-      doc.password = password;
-      doc.address = address;
-      doc.neighborhood = neighborhood;
-      doc.phone = phone;
-      doc.zip = zip;
+    let user = await UserModel.findOne({ code }).exec();
+    let user2 = await UserModel.find({
+      $and: [{ $or: [{ email }, { username }] }, { code: { $ne: code } }],
+    });
+    if (user && !user2.length) {
+      user.name = name;
+      user.lastName = lastName;
+      user.email = email;
+      user.username = username;
+      user.password = password;
+      user.address = address;
+      user.neighborhood = neighborhood;
+      user.phone = phone;
+      user.zip = zip;
 
-      doc = await doc.save();
-      res.json(doc);
+      user = await user.save();
+      res.json(user);
     } else {
       res.json(null);
     }
@@ -583,8 +586,10 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   try {
     console.log(req.query);
     const { userCode } = req.query;
-    let shoppingCart = await ShoppingCartModel.findOne({ code: userCode }).exec();
-    if (shoppingCart.products.length) {     
+    let shoppingCart = await ShoppingCartModel.findOne({
+      code: userCode,
+    }).exec();
+    if (shoppingCart.products.length) {
       res.json(shoppingCart);
     } else {
       res.json(null);
