@@ -584,7 +584,7 @@ router.get("/api/user/shopping-cart", async (req, res) => {
     console.log(req.query);
     const { userCode } = req.query;
     let shoppingCart = await ShoppingCartModel.findOne({ code: userCode }).exec();
-    if (shoppingCart.products) {     
+    if (shoppingCart.products.length) {     
       res.json(shoppingCart);
     } else {
       res.json(null);
