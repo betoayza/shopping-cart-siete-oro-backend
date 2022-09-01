@@ -33,7 +33,7 @@ router.get("/api/admin/users/all", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/users/search", async (req, res) => {
+router.get("/api/admin/users/search/one", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -47,6 +47,36 @@ router.get("/api/admin/users/search", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.json(null);
+  }
+}); //working
+
+router.get("/api/admin/users/search", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { term } = req.query;
+    let termNumber = null;
+    isNaN(Number(term)) ? term : (termNumber = Number(term));
+
+    let users = await UserModel.find({
+      $or: [
+        { code: termNumber },
+        { name: { $regex: `${term}`, $options: "i" } },
+        { lastName: { $regex: `${term}`, $options: "i" } },
+        { email: { $regex: `${term}`, $options: "i" } },
+        { username: { $regex: `${term}`, $options: "i" } },
+        { address: { $regex: `${term}`, $options: "i" } },
+        { neighborhood: { $regex: `${term}`, $options: "i" } },
+        { phone: termNumber },
+        { zip: { $regex: `${term}`, $options: "i" } },
+        { type: { $regex: `${term}`, $options: "i" } },
+        { status: { $regex: `^${term}`, $options: "i" } },
+      ],
+    });
+
+    if (users) res.json(users);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
   }
 }); //working
 
@@ -153,6 +183,31 @@ router.get("/admin/search/orders/incoming", async (req, res) => {
   }
 });
 
+router.get("/api/admin/orders/search", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { term } = req.query;
+    let termNumber = null;
+    isNaN(Number(term)) ? term : (termNumber = Number(term));
+
+    let orders = await OrderModel.find({
+      $or: [
+        { code: termNumber },
+        { userCode: termNumber },
+        { products: { $regex: `${term}`, $options: "i" } },
+        { amount: termNumber },
+        { date: { $regex: `${term}`, $options: "i" } },
+        { status: { $regex: `^${term}`, $options: "i" } },
+      ],
+    });
+
+    if (orders) res.json(orders);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 //PRODUCTS
 router.get("/api/products/all", async (req, res) => {
   try {
@@ -182,7 +237,7 @@ router.get("/api/admin/products/search", async (req, res) => {
         { description: { $regex: `${term}`, $options: "i" } },
         { price: termNumber },
         { stock: termNumber },
-        { status: { $regex: `${term}`, $options: "i" } },
+        { status: { $regex: `^${term}`, $options: "i" } },
       ],
     });
 
@@ -392,26 +447,22 @@ router.post("/api/signup", async (req, res) => {
 router.get("/api/products/get", async (req, res) => {
   try {
     console.log(req.query);
-    const { name } = req.query;
-    let doc = await ProductModel.find({
+    const { term } = req.query;
+    let products = await ProductModel.find({
       $and: [
         {
           $or: [
             {
-              name: { $regex: `${name}`, $options: "i" },
+              name: { $regex: `${term}`, $options: "i" },
             },
-            { description: { $regex: `${name}`, $options: "i" } },
+            { description: { $regex: `${term}`, $options: "i" } },
           ],
         },
         { status: "Activo" },
       ],
     });
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
+    if (products.length) res.json(products);
+    else res.json(null);
   } catch (error) {
     console.error(error);
   }
