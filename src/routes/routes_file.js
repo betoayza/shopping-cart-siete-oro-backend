@@ -512,19 +512,15 @@ router.put("/api/user/profile/modify", async (req, res) => {
 });
 
 //ORDERS
-router.get("/api/user/orders/code", async (req, res) => {
+router.get("/api/user/orders", async (req, res) => {
   try {
     console.log(req.query);
-    const { orderCode, userCode } = req.query;
-    console.log(orderCode);
+    const { userCode } = req.query;
     console.log(userCode);
 
-    let doc = await OrderModel.findOne({
-      $and: [{ code: orderCode }, { userCode }],
-    }).exec();
-    if (doc) {
-      console.log(doc);
-      res.json(doc);
+    let orders = await OrderModel.find({ code: userCode });
+    if (orders.length) {
+      res.json(orders);
     } else {
       res.json(null);
     }
