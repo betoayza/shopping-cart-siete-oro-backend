@@ -682,4 +682,33 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
   }
 }); //working
 
+//MERCADO PAGO
+router.post("/checkout/preferences", (req, res) => {
+  try {
+    // Create a preference object
+    let preference = {
+      items: [
+        {
+          title: "My product",
+          unit_price: 100,
+          quantity: 1,
+        },
+      ],
+      purpose: "wallet_purchase",
+    };
+
+    Mercadopago.preferences
+      .create(preference)
+      .then(function (response) {
+        // This value will replace the string "<%= global.id %>" in your HTML
+        global.id = response.body.id;
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 export default router;

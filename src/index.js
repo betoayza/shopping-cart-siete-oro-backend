@@ -20,7 +20,8 @@ app.use(
 app.use(morgan("dev"));
 
 //cors support
-app.use(cors({ origin: true }));
+// app.use(cors({ origin: true }));
+app.use(cors());
 
 //Routes
 app.use(router);

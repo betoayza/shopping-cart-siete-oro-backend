@@ -9,7 +9,7 @@ const URI =
 const conn = mongoose.createConnection(URI);
 
 conn.once("open", () => {
-  console.log("Connected to MongoDB");
+  console.log("Connected to MongoDB");  
 });
 
 //autoIncrement.initialize(connection);
@@ -26,7 +26,7 @@ const productSchema = new Schema(
     status: { type: String, required: true },
   },
   {
-    collection: "products",
+    collection: "products",    
   }
 );
 
