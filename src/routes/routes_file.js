@@ -4,6 +4,8 @@ import OrderModel from "../models/orderModel.js";
 import UserModel from "../models/userModel.js";
 import ShoppingCartModel from "../models/shoppingCartModel.js";
 import multer from "multer";
+import { PaymentController } from "../../controllers/PaymentController.js";
+import { PaymentService } from "../../services/PaymentService.js";
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -682,30 +684,14 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
   }
 }); //working
 
-//MERCADO PAGO
-router.post("/checkout/preferences", (req, res) => {
-  try {
-    // Create a preference object
-    let preference = {
-      items: [
-        {
-          title: "My product",
-          unit_price: 100,
-          quantity: 1,
-        },
-      ],
-      purpose: "wallet_purchase",
-    };
+//--------------------------
 
-    Mercadopago.preferences
-      .create(preference)
-      .then(function (response) {
-        // This value will replace the string "<%= global.id %>" in your HTML
-        global.id = response.body.id;
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+const paymentInstance = new PaymentController(new PaymentService());
+
+//MERCADO PAGO
+router.post("/api/payment", (req, res) => {
+  try {  
+    paymentInstance.getPaymentLink(req, res);
   } catch (error) {
     console.error(error);
   }
