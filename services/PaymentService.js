@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export class PaymentService {
-  async createPayment(products) {
+  async createPayment(items, userCode) {
     const url = "https://api.mercadopago.com/checkout/preferences";   
 
-    const items = products.map((item) => ({
+      let items2 = items.map((item) => ({
       title: item.name,
       description: item.description,
       picture_url: "",
@@ -15,7 +15,7 @@ export class PaymentService {
 
     const body = {
       payer_email: "payer_email@test.com",
-      items,
+      items: items2,
       // items: [
       //   {
       //     title: "Dummy Title",
@@ -27,9 +27,9 @@ export class PaymentService {
       //   }
       // ],
       back_urls: {
-        failure: "/failure",
-        pending: "/pending",
-        success: "/success",
+        failure: "http://127.0.0.1:12345/failure",
+        pending: "http://127.0.0.1:12345/pending",
+        success: `http://127.0.0.1:12345/success/${userCode}/${items}`, 
       },
     };
 

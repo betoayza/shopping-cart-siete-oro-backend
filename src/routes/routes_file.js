@@ -6,6 +6,7 @@ import ShoppingCartModel from "../models/shoppingCartModel.js";
 import multer from "multer";
 import { PaymentController } from "../../controllers/PaymentController.js";
 import { PaymentService } from "../../services/PaymentService.js";
+import moment from "moment";
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -533,10 +534,31 @@ router.get("/api/user/orders", async (req, res) => {
 
 router.post("/api/user/orders/add", async (req, res) => {
   try {
-    // console.log(req.body);
-    // const {products, userCode}=req.body;
-    // const newOrder = new OrderModel({code: Date.now(), userCode, products, amount, date, status: "Active"});
-    // let doc= await OrderModel.save
+    console.log(req.body);
+    const { userCode, items } = req.body;
+    let user = await UserModel.findOne({ code: userCode }).exec();
+    if (user) {
+      let amount = items.reduce((acc, item) => {
+        acc = item.price * item.toBuy;
+        return acc;
+      });
+
+      let products = items.map((item) => {
+        return item.name;
+      });
+      const newOrder = new OrderModel({
+        code: Date.now(),
+        userCode,
+        products,
+        amount,
+        date: moment(new Date()).format("DD/MM/YYYY"),
+        status: "Active",
+      });
+      await newOrder.save();
+      res.json(newOrder);
+    } else {
+      res.json(null);
+    }
   } catch (error) {
     console.error(error);
   }
@@ -690,11 +712,11 @@ const paymentInstance = new PaymentController(new PaymentService());
 
 //MERCADO PAGO
 router.post("/api/payment", (req, res) => {
-  try {  
+  try {
     paymentInstance.getPaymentLink(req, res);
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 export default router;
