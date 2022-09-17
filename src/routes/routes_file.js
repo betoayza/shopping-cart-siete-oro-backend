@@ -538,6 +538,7 @@ router.post("/api/user/orders/add", async (req, res) => {
     const { userCode, items } = req.body;
     let user = await UserModel.findOne({ code: userCode }).exec();
     if (user) {
+      console.log("asd: ", items); //los items no llegan, pero si userCode
       let amount = items.reduce((acc, item) => {
         acc = item.price * item.toBuy;
         return acc;
@@ -711,7 +712,7 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
 const paymentInstance = new PaymentController(new PaymentService());
 
 //MERCADO PAGO
-router.post("/api/payment", (req, res) => {
+router.post("/api/payment", async (req, res) => {
   try {
     paymentInstance.getPaymentLink(req, res);
   } catch (error) {
