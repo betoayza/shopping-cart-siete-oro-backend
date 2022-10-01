@@ -538,7 +538,7 @@ router.post("/api/user/orders/add", async (req, res) => {
     const { userCode, items } = req.body;
     let user = await UserModel.findOne({ code: userCode }).exec();
     if (user) {
-      console.log("asd: ", items); //los items no llegan, pero si userCode
+      console.log("Items: ", items); //los items no llegan, pero si userCode
       let amount = items.reduce((acc, item) => {
         acc = item.price * item.toBuy;
         return acc;
@@ -649,16 +649,20 @@ router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
   try {
     console.log(req.body);
     const { userCode } = req.body;
-    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
-    if (doc) {
-      console.log(doc);
-      await ShoppingCartModel.updateOne(
-        { code: userCode },
-        { $pull: { products: {} } }
-      );
-      //returns shopping cart updated
-      doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
-      res.json(doc);
+    let shoppingCart = await ShoppingCartModel.findOne({
+      code: userCode,
+    }).exec();
+    if (shoppingCart) {
+      console.log(shoppingCart);
+      shoppingCart.products = [];
+      shoppingCart = shoppingCart.save();
+      // await ShoppingCartModel.updateOne(
+      //   { code: userCode },
+      //   { $pull: { products: {} } }
+      // );
+      //returns shopping cart cleaned
+      shoppingCart = await ShoppingCartModel.findOne({ code: userCode }).exec();
+      res.json(shoppingCart);
     } else {
       res.json(null);
     }
@@ -671,12 +675,18 @@ router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
   try {
     console.log("asd: ", req.body);
     const { userCode, toBuy, itemIndex } = req.body;
-    let doc = await ShoppingCartModel.updateOne(
-      { code: userCode },
-      { $set: { [`products.${itemIndex}.toBuy`]: toBuy } }
-    );
-    console.log(doc);
-    res.json(doc);
+    let shoppingCart = await ShoppingCartModel.findOne({
+      code: userCode,
+    }).exec();
+    if (shoppingCart && shoppingCart.products.length) {
+      //shopping cart has 1+ products
+      let shoppingCart = await ShoppingCartModel.updateOne(
+        { code: userCode },
+        { $set: { [`products.${itemIndex}.toBuy`]: toBuy } }
+      );
+      console.log(shoppingCart);
+      res.json(shoppingCart);
+    } else res.json(shoppingCart); //response with empty shopping cart
   } catch (error) {
     console.error(error);
   }
@@ -712,7 +722,7 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
 const paymentInstance = new PaymentController(new PaymentService());
 
 //MERCADO PAGO
-router.post("/api/payment", async (req, res) => {
+router.post("/api/payment", (req, res) => {
   try {
     paymentInstance.getPaymentLink(req, res);
   } catch (error) {

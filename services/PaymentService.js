@@ -1,12 +1,13 @@
 import axios from "axios";
+import { Base64 } from "js-base64";
 
 export class PaymentService {
   async createPayment(items2, userCode) {
-    console.log("xcasc: ", items2, userCode); //imprime correctamente
     const url = "https://api.mercadopago.com/checkout/preferences";
 
-    const items4 = await items2.map((item)=>item);
-
+    
+    // let param = new URLSearchParams(items2).toString();
+    
     let items3 = await items2.map((item) => ({
       title: item.name,
       description: item.description,
@@ -15,6 +16,8 @@ export class PaymentService {
       quantity: item.toBuy,
       unit_price: item.price,
     }));
+    
+    items2 = JSON.stringify({ ...items2 }, null, 2);
 
     const body = {
       payer_email: "payer_email@test.com",
@@ -30,13 +33,13 @@ export class PaymentService {
       //   }
       // ],
       back_urls: {
-        failure: "http://127.0.0.1:12345/failure",
-        pending: "http://127.0.0.1:12345/pending",
-        success: `http://127.0.0.1:12345/success/${userCode}/${items4}`,
+        failure: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/failure`,
+        pending: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/pending`,
+        success: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/success`,
       },
     };
 
-    console.log("*******", body.items); //imprime correctamente
+    //console.log("*******", body.items); //imprime correctamente
 
     const payment = await axios.post(url, body, {
       headers: {
