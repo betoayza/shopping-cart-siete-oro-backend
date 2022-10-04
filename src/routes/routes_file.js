@@ -539,15 +539,14 @@ router.post("/api/user/orders/add", async (req, res) => {
     let user = await UserModel.findOne({ code: userCode }).exec();
     if (user) {
       console.log("Items: ", items); //los items no llegan, pero si userCode
-      let amount = items.reduce((acc, item) => {
-        acc = item.price * item.toBuy;
-        return acc;
-      });
+      let amount = await items.reduce((acc, item) => {
+        return acc += Number(item.price * item.toBuy);        
+      }, 0);
 
-      let products = items.map((item) => {
+      let products = await items.map((item) => {
         return item.name;
       });
-      const newOrder = new OrderModel({
+      let newOrder = new OrderModel({
         code: Date.now(),
         userCode,
         products,
@@ -555,7 +554,7 @@ router.post("/api/user/orders/add", async (req, res) => {
         date: moment(new Date()).format("DD/MM/YYYY"),
         status: "Active",
       });
-      await newOrder.save();
+      newOrder = await newOrder.save();
       res.json(newOrder);
     } else {
       res.json(null);
@@ -610,7 +609,7 @@ router.get("/api/user/shopping-cart", async (req, res) => {
     let shoppingCart = await ShoppingCartModel.findOne({
       code: userCode,
     }).exec();
-    if (shoppingCart.products.length) {
+    if (shoppingCart) {
       res.json(shoppingCart);
     } else {
       res.json(null);
@@ -690,7 +689,7 @@ router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.put("/api/user/shopping-cart/add", async (req, res) => {
   try {
