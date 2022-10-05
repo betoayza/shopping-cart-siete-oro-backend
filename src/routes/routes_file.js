@@ -535,24 +535,22 @@ router.get("/api/user/orders", async (req, res) => {
 router.post("/api/user/orders/add", async (req, res) => {
   try {
     console.log(req.body);
-    const { userCode, items } = req.body;
+    const { userCode, items, installments, totalAmount } = req.body;
     let user = await UserModel.findOne({ code: userCode }).exec();
     if (user) {
       console.log("Items: ", items); //los items no llegan, pero si userCode
-      let amount = await items.reduce((acc, item) => {
-        return acc += Number(item.price * item.toBuy);        
-      }, 0);
 
       let products = await items.map((item) => {
         return item.name;
       });
+
       let newOrder = new OrderModel({
         code: Date.now(),
         userCode,
         products,
-        amount,
+        amount: totalAmount,
         date: moment(new Date()).format("DD/MM/YYYY"),
-        status: "Active",
+        status: "En curso",
       });
       newOrder = await newOrder.save();
       res.json(newOrder);

@@ -5,19 +5,18 @@ export class PaymentService {
   async createPayment(items2, userCode) {
     const url = "https://api.mercadopago.com/checkout/preferences";
 
-    
     // let param = new URLSearchParams(items2).toString();
-    
+
     let items3 = await items2.map((item) => ({
+      id: item._id,
       title: item.name,
-      description: item.description,
+      currency_id: "ARS",
       picture_url: "",
+      description: item.description,
       category_id: "category123",
       quantity: item.toBuy,
       unit_price: item.price,
     }));
-    
-    items2 = JSON.stringify({ ...items2 }, null, 2);
 
     const body = {
       payer_email: "payer_email@test.com",
