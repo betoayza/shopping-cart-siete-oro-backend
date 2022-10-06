@@ -478,6 +478,7 @@ router.get("/api/products/get/list", async (req, res) => {
     let products = await ProductModel.find({
       code: { $in: itemsIDs },
     });
+    console.log(products);
     if (products.length) res.json(products);
     else res.json(null);
   } catch (error) {
