@@ -471,6 +471,20 @@ router.get("/api/products/get", async (req, res) => {
   }
 }); //working
 
+router.get("/api/products/get/list", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { itemsIDs } = req.query;
+    let products = await ProductModel.find({
+      code: { $in: itemsIDs },
+    });
+    if (products.length) res.json(products);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+}); //working
+
 //EDIT PROFILE
 router.put("/api/user/profile/modify", async (req, res) => {
   try {
@@ -541,7 +555,7 @@ router.post("/api/user/orders/add", async (req, res) => {
       console.log("Items: ", items); //los items no llegan, pero si userCode
 
       let products = await items.map((item) => {
-        return item.name;
+        return item.code;
       });
 
       let newOrder = new OrderModel({
@@ -560,7 +574,7 @@ router.post("/api/user/orders/add", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.delete("/api/user/orders/delete", async (req, res) => {
   try {
@@ -580,17 +594,16 @@ router.delete("/api/user/orders/delete", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.get("/api/user/orders/all", async (req, res) => {
   try {
     console.log(req.query);
-    const { code } = req.query;
-    console.log(code);
-    let doc = await OrderModel.find({ userCode: code });
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
+    const { userCode } = req.query;
+    console.log(userCode);
+    let orders = await OrderModel.find({ userCode });
+    if (orders.length) {      
+      res.json(orders);
     } else {
       res.json(null);
     }
