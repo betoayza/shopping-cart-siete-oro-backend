@@ -581,14 +581,16 @@ router.delete("/api/user/orders/delete", async (req, res) => {
   try {
     console.log(req.body);
     const { code, userCode } = req.body;
-    let doc = await OrderModel.findOne({
-      $and: [{ code }, { userCode }, { status: "Activo" }],
+    let order = await OrderModel.findOne({
+      $and: [{ code }, { userCode }, { status: "En curso" }],
     }).exec();
-    if (doc) {
-      console.log(doc);
-      doc.status = "Dado de baja";
-      doc = doc.save();
-      res.json(doc);
+    if (order) {
+      console.log(order);
+      order.status = "Cancelado";
+      order = order.save();
+      //find all user orders
+      let orders = await OrderModel.find({ userCode });
+      res.json(orders);
     } else {
       res.json(null);
     }
@@ -603,7 +605,7 @@ router.get("/api/user/orders/all", async (req, res) => {
     const { userCode } = req.query;
     console.log(userCode);
     let orders = await OrderModel.find({ userCode });
-    if (orders.length) {      
+    if (orders.length) {
       res.json(orders);
     } else {
       res.json(null);
