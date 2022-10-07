@@ -391,11 +391,11 @@ router.get("/api/login", async (req, res) => {
   try {
     console.log(req.query);
     const { data, password } = req.query;
-    let doc = await UserModel.findOne({
+    let user = await UserModel.findOne({
       $and: [{ $or: [{ email: data }, { username: data }] }, { password }],
     }).exec();
-    if (doc) {
-      res.json(doc);
+    if (user) {
+      res.json(user);
     } else {
       res.json(null);
     }
