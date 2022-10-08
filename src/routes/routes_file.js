@@ -620,9 +620,11 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   try {
     console.log(req.query);
     const { userCode } = req.query;
+
     let shoppingCart = await ShoppingCartModel.findOne({
       code: userCode,
     }).exec();
+
     if (shoppingCart) {
       res.json(shoppingCart);
     } else {
@@ -633,23 +635,56 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   }
 }); //working
 
+router.get("/api/user/shopping-cart/check-item-added", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { userCode, prodCode } = req.query;
+
+    let added = await ShoppingCartModel.findOne({
+      $and: [
+        {
+          code: Number(userCode),
+        },
+        {
+          products: { $elemMatch: { code: Number(prodCode) } },
+        },
+      ],
+    }).exec();
+
+    if (added) res.json(true);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+}); //working
+
 router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   try {
     console.log(req.body);
     const { prodCode, userCode } = req.body;
-    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec(); //validate shopping cart
-    let doc2 = await ProductModel.findOne({ code: prodCode }).exec(); //validate product
-    if (doc && doc2) {
-      //maked delete
-      doc = await ShoppingCartModel.updateOne(
-        { code: userCode },
-        { $pull: { products: { code: prodCode } } }
+
+    // let product = await ShoppingCartModel.findOne({
+    //   $and: [{ code: userCode }, { $get: { products: { code: prodCode } } }],
+    // }).exec();
+
+    let added = await ShoppingCartModel.findOne({
+      $and: [
+        {
+          code: Number(userCode),
+        },
+        {
+          products: { $elemMatch: { code: Number(prodCode) } },
+        },
+      ],
+    }).exec();
+
+    if (added) {
+      //make delete
+      let result = await ShoppingCartModel.updateOne(
+        { code: Number(userCode) },
+        { $pull: { products: { code: Number(prodCode) } } }
       );
-      console.log(doc);
-      //returns shopping cart updated
-      doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
-      console.log(doc);
-      res.json(doc);
+      res.json(true);
     } else {
       res.json(null);
     }
@@ -710,18 +745,29 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
     console.log(req.body);
     const { productCode, userCode } = req.body;
 
-    let doc = await ShoppingCartModel.findOne({ code: userCode }).exec();
-    let doc2 = await ProductModel.findOne({
-      $and: [{ code: productCode }, { status: "Activo" }],
-    }).exec();
-    let doc3 = await ShoppingCartModel.findOne({
-      products: { $elemMatch: { code: productCode } },
+    let shoppingCart = await ShoppingCartModel.findOne({
+      code: userCode,
     }).exec();
 
-    if (doc && doc2 && !doc3) {
-      doc.products.push(doc2);
-      doc = doc.save();
-      res.json(doc);
+    let product = await ProductModel.findOne({
+      $and: [{ code: productCode }, { status: "Activo" }],
+    }).exec();
+
+    let added = await ShoppingCartModel.findOne({
+      $and: [
+        {
+          code: userCode,
+        },
+        {
+          products: { $elemMatch: { code: productCode } },
+        },
+      ],
+    }).exec();
+
+    if (shoppingCart && product && !added) {
+      shoppingCart.products.push(product);
+      shoppingCart = shoppingCart.save();
+      res.json(true);
     } else {
       res.json(null);
     }
