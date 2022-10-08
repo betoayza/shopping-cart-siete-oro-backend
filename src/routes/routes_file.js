@@ -678,13 +678,18 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
       ],
     }).exec();
 
-    if (added) {
-      //make delete
-      let result = await ShoppingCartModel.updateOne(
+    if (added) { //make delete
+
+      let updateResult = await ShoppingCartModel.updateOne(
         { code: Number(userCode) },
         { $pull: { products: { code: Number(prodCode) } } }
       );
-      res.json(true);
+
+      let shoppingCartUpdated = await ShoppingCartModel.findOne({
+        code: userCode,
+      }).exec();
+
+      res.json(shoppingCartUpdated);
     } else {
       res.json(null);
     }
