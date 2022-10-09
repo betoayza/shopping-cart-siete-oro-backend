@@ -678,7 +678,8 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
       ],
     }).exec();
 
-    if (added) { //make delete
+    if (added) {
+      //make delete
 
       let updateResult = await ShoppingCartModel.updateOne(
         { code: Number(userCode) },
