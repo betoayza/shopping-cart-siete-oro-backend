@@ -456,9 +456,9 @@ router.get("/api/products/get", async (req, res) => {
         {
           $or: [
             {
-              name: { $regex: `${term}`, $options: "i" },
+              name: { $regex: `^${term}`, $options: "i" },
             },
-            { description: { $regex: `${term}`, $options: "i" } },
+            { description: { $regex: `^${term}`, $options: "i" } },
           ],
         },
         { status: "Activo" },
@@ -584,8 +584,7 @@ router.delete("/api/user/orders/delete", async (req, res) => {
     let order = await OrderModel.findOne({
       $and: [{ code }, { userCode }, { status: "En curso" }],
     }).exec();
-    if (order) {
-      console.log(order);
+    if (order) {      
       order.status = "Cancelado";
       order = order.save();
       //find all user orders
