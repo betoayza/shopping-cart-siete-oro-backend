@@ -236,8 +236,8 @@ router.get("/api/admin/products/search", async (req, res) => {
     let products = await ProductModel.find({
       $or: [
         { code: termNumber },
-        { name: { $regex: `${term}`, $options: "i" } },
-        { description: { $regex: `${term}`, $options: "i" } },
+        { name: { $regex: `^${term}`, $options: "i" } },
+        { description: { $regex: `^${term}`, $options: "i" } },
         { price: termNumber },
         { stock: termNumber },
         { status: { $regex: `^${term}`, $options: "i" } },
@@ -584,7 +584,7 @@ router.delete("/api/user/orders/delete", async (req, res) => {
     let order = await OrderModel.findOne({
       $and: [{ code }, { userCode }, { status: "En curso" }],
     }).exec();
-    if (order) {      
+    if (order) {
       order.status = "Cancelado";
       order = order.save();
       //find all user orders
