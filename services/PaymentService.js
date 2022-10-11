@@ -14,7 +14,7 @@ export class PaymentService {
       picture_url: "",
       description: item.description,
       category_id: "category123",
-      quantity: item.toBuy,
+      quantity: Number(item.toBuy),
       unit_price: item.price,
     }));
 
