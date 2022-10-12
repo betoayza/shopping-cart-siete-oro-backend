@@ -197,9 +197,9 @@ router.get("/api/admin/orders/search", async (req, res) => {
       $or: [
         { code: termNumber },
         { userCode: termNumber },
-        { products: { $regex: `${term}`, $options: "i" } },
+        // { products: { $regex: `^${term}`, $options: "i" } },
         { amount: termNumber },
-        { date: { $regex: `${term}`, $options: "i" } },
+        { date: { $regex: `^${term}`, $options: "i" } },
         { status: { $regex: `^${term}`, $options: "i" } },
       ],
     });
@@ -244,7 +244,7 @@ router.get("/api/admin/products/search", async (req, res) => {
       ],
     });
 
-    if (products.length) {
+    if (products) {
       res.json(products);
     } else res.json(null);
   } catch (error) {
@@ -553,11 +553,21 @@ router.post("/api/user/orders/add", async (req, res) => {
     const { userCode, items, installments, totalAmount } = req.body;
     let user = await UserModel.findOne({ code: userCode }).exec();
     if (user) {
-      console.log("Items: ", items); //los items no llegan, pero si userCode
+      console.log("Items: ", items);
 
-      let products = await items.map((item) => {
+      let products = await items.map(async (item) => {
+        //updated product stock
+        let product = await ProductModel.findOne({
+          code: item.code,
+        }).exec();
+
+        product.stock -= item.toBuy;
+        product.save();
+
         return item.code;
       });
+
+      console.log("Products updated: ", products);
 
       let newOrder = new OrderModel({
         code: Date.now(),
@@ -568,6 +578,8 @@ router.post("/api/user/orders/add", async (req, res) => {
         status: "En curso",
       });
       newOrder = await newOrder.save();
+
+      //return successful order
       res.json(newOrder);
     } else {
       res.json(null);
