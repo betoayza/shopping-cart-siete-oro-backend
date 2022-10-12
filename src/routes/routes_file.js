@@ -156,36 +156,6 @@ router.get("/api/admin/orders/code", async (req, res) => {
   }
 }); //working
 
-router.get("/admin/search/orders/received", async (req, res) => {
-  try {
-    console.log(req.query);
-    let doc = await OrderModel.find({ status: "Entregado" });
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-router.get("/admin/search/orders/incoming", async (req, res) => {
-  try {
-    console.log(req.query);
-    let doc = await OrderModel.find({ status: "En camino" });
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
-    } else {
-      res.json(null);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 router.get("/api/admin/orders/search", async (req, res) => {
   try {
     console.log(req.query);
@@ -209,7 +179,7 @@ router.get("/api/admin/orders/search", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 //PRODUCTS
 router.get("/api/products/all", async (req, res) => {
@@ -250,7 +220,7 @@ router.get("/api/admin/products/search", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.post(
   "/api/admin/product/add",
@@ -402,7 +372,7 @@ router.get("/api/login", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.post("/api/signup", async (req, res) => {
   try {
@@ -442,7 +412,7 @@ router.post("/api/signup", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-});
+}); //working
 
 //-------------------USER ROUTES-------------------------------
 
@@ -527,7 +497,7 @@ router.put("/api/user/profile/modify", async (req, res) => {
     res.json(null);
     console.error(error);
   }
-});
+}); //working
 
 //ORDERS
 router.get("/api/user/orders", async (req, res) => {
@@ -795,9 +765,10 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
 
 //--------------------------
 
-const paymentInstance = new PaymentController(new PaymentService());
 
 //MERCADO PAGO
+const paymentInstance = new PaymentController(new PaymentService());
+
 router.post("/api/payment", (req, res) => {
   try {
     paymentInstance.getPaymentLink(req, res);
