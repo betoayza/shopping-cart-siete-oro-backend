@@ -63,15 +63,15 @@ router.get("/api/admin/users/search", async (req, res) => {
     let users = await UserModel.find({
       $or: [
         { code: termNumber },
-        { name: { $regex: `${term}`, $options: "i" } },
-        { lastName: { $regex: `${term}`, $options: "i" } },
-        { email: { $regex: `${term}`, $options: "i" } },
-        { username: { $regex: `${term}`, $options: "i" } },
-        { address: { $regex: `${term}`, $options: "i" } },
-        { neighborhood: { $regex: `${term}`, $options: "i" } },
+        { name: { $regex: `^${term}`, $options: "i" } },
+        { lastName: { $regex: `^${term}`, $options: "i" } },
+        { email: { $regex: `^${term}`, $options: "i" } },
+        { username: { $regex: `^${term}`, $options: "i" } },
+        { address: { $regex: `^${term}`, $options: "i" } },
+        { neighborhood: { $regex: `^${term}`, $options: "i" } },
         { phone: termNumber },
-        { zip: { $regex: `${term}`, $options: "i" } },
-        { type: { $regex: `${term}`, $options: "i" } },
+        { zip: { $regex: `^${term}`, $options: "i" } },
+        { type: { $regex: `^${term}`, $options: "i" } },
         { status: { $regex: `^${term}`, $options: "i" } },
       ],
     });
