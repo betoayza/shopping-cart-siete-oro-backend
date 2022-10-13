@@ -434,7 +434,7 @@ router.get("/api/products/get", async (req, res) => {
         { status: "Activo" },
       ],
     });
-    if (products.length) res.json(products);
+    if (products) res.json(products);
     else res.json(null);
   } catch (error) {
     console.error(error);

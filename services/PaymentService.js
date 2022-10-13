@@ -32,7 +32,7 @@ export class PaymentService {
       //   }
       // ],
       back_urls: {
-        failure: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/failure`,
+        failure: `http://127.0.0.1:12345/user/shopping-cart/${userCode}`,
         pending: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/pending`,
         success: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/success`,
       },
