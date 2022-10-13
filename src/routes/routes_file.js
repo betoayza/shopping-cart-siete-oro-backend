@@ -362,7 +362,11 @@ router.get("/api/login", async (req, res) => {
     console.log(req.query);
     const { data, password } = req.query;
     let user = await UserModel.findOne({
-      $and: [{ $or: [{ email: data }, { username: data }] }, { password }],
+      $and: [
+        { $or: [{ email: data }, { username: data }] },
+        { password },
+        { status: "Activo" },
+      ],
     }).exec();
     if (user) {
       res.json(user);
