@@ -525,14 +525,17 @@ router.post("/api/user/orders/add", async (req, res) => {
     if (user) {
       console.log("Items: ", items);
 
-      let products = await items.map(async (item) => {
-        //updated product stock
-        let product = await ProductModel.findOne({
-          code: item.code,
-        }).exec();
+      let products = await items.map((item) => {
+        const updateStock = async (item) => {
+          //updated product stock
+          let product = await ProductModel.findOne({
+            code: item.code,
+          }).exec();
 
-        product.stock -= item.toBuy;
-        product.save();
+          product.stock -= item.toBuy;
+          product.save();
+        };
+        updateStock(item);
 
         return item.code;
       });
@@ -764,7 +767,6 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
 }); //working
 
 //--------------------------
-
 
 //MERCADO PAGO
 const paymentInstance = new PaymentController(new PaymentService());
