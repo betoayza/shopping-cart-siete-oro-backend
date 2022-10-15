@@ -740,20 +740,20 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
     const { productCode, userCode } = req.body;
 
     let shoppingCart = await ShoppingCartModel.findOne({
-      code: userCode,
+      code: Number(userCode),
     }).exec();
 
     let product = await ProductModel.findOne({
-      $and: [{ code: productCode }, { status: "Activo" }],
+      $and: [{ code: Number(productCode) }, { status: "Activo" }],
     }).exec();
 
     let added = await ShoppingCartModel.findOne({
       $and: [
         {
-          code: userCode,
+          code: Number(userCode),
         },
         {
-          products: { $elemMatch: { code: productCode } },
+          products: { $elemMatch: { code: Number(productCode) } },
         },
       ],
     }).exec();
