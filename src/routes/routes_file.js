@@ -503,6 +503,29 @@ router.put("/api/user/profile/modify", async (req, res) => {
   }
 }); //working
 
+router.post("/api/user/comment/add", async (req, res) => {
+  try {
+    console.log(req.body);
+    let { userCode, comment, productCode } = req.body;
+
+    let user = await UserModel.findOne({ code: userCode }).exec();
+
+    let product = await ProductModel.findOne({ code: productCode }).exec();
+    
+    if (product && user) {
+      const username = user.username;
+      comment = { [`${username}`]: comment };
+      product.comments.push(comment);
+      product.save();
+      res.json(true);
+    } else {
+      res.json(null);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 //ORDERS
 router.get("/api/user/orders", async (req, res) => {
   try {
