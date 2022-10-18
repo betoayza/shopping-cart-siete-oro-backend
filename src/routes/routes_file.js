@@ -256,6 +256,7 @@ router.post(
           stock,
           image: req.file.buffer,
           toBuy,
+          comments: [],
           status,
         });
         doc = await newProduct.save();
