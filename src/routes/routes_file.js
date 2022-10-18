@@ -445,6 +445,20 @@ router.get("/api/products/get", async (req, res) => {
   }
 }); //working
 
+router.get("/api/product/code", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { productCode } = req.query;
+
+    let product = await ProductModel.findOne({ code: productCode }).exec();
+
+    if (product) res.json(product);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.get("/api/products/get/list", async (req, res) => {
   try {
     console.log(req.query);
@@ -511,7 +525,7 @@ router.post("/api/user/comment/add", async (req, res) => {
     let user = await UserModel.findOne({ code: userCode }).exec();
 
     let product = await ProductModel.findOne({ code: productCode }).exec();
-    
+
     if (product && user) {
       const username = user.username;
       comment = { [`${username}`]: comment };
@@ -524,7 +538,7 @@ router.post("/api/user/comment/add", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 //ORDERS
 router.get("/api/user/orders", async (req, res) => {
