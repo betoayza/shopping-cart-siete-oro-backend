@@ -458,7 +458,7 @@ router.get("/api/product/code", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-});
+}); //working
 
 router.get("/api/products/get/list", async (req, res) => {
   try {
@@ -529,7 +529,7 @@ router.post("/api/user/comment/add", async (req, res) => {
 
     if (product && user) {
       const username = user.username;
-      comment = { [`${username}`]: comment };
+      comment = { username, comment, status: "Active" };
       product.comments.push(comment);
       product.save();
       res.json(true);
@@ -540,6 +540,24 @@ router.post("/api/user/comment/add", async (req, res) => {
     console.error(error);
   }
 }); //working
+
+router.delete("/api/user/comment/delete", async (req, res) => {
+  try {
+    const { index, productCode } = req.body;
+
+    let deleteResult = await ProductModel.updateOne(
+      { code: Number(productCode) },
+      { $set: { [`comments.${index}`]: { status: "Deleted" } } }
+    );
+
+    console.log(deleteResult);
+
+    if (deleteResult.modifiedCount === 1) res.json(true);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 //ORDERS
 router.get("/api/user/orders", async (req, res) => {
