@@ -553,11 +553,7 @@ router.delete("/api/user/comment/delete", async (req, res) => {
         },
       }
     );
-
-    let product = await ProductModel.findOne({
-      code: Number(productCode),
-    }).exec();
-
+    
     console.log(deleteResult);
 
     if (deleteResult.modifiedCount === 1) res.json(true);
