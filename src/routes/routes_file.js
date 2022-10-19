@@ -547,8 +547,16 @@ router.delete("/api/user/comment/delete", async (req, res) => {
 
     let deleteResult = await ProductModel.updateOne(
       { code: Number(productCode) },
-      { $set: { [`comments.${index}`]: { status: "Deleted" } } }
+      {
+        $set: {
+          [`comments.${index}.status`]: "Deleted",
+        },
+      }
     );
+
+    let product = await ProductModel.findOne({
+      code: Number(productCode),
+    }).exec();
 
     console.log(deleteResult);
 
@@ -649,7 +657,7 @@ router.get("/api/user/orders/all", async (req, res) => {
     const { userCode } = req.query;
     console.log(userCode);
     let orders = await OrderModel.find({ userCode });
-    if (orders.length) {
+    if (orders) {
       res.json(orders);
     } else {
       res.json(null);
