@@ -553,7 +553,7 @@ router.delete("/api/user/comment/delete", async (req, res) => {
         },
       }
     );
-    
+
     console.log(deleteResult);
 
     if (deleteResult.modifiedCount === 1) res.json(true);
