@@ -123,7 +123,6 @@ router.put("/api/admin/users/activate", async (req, res) => {
 }); //working
 
 //ORDERS
-
 router.get("/api/admin/orders/all", async (req, res) => {
   try {
     let doc = await OrderModel.find({});
@@ -420,6 +419,22 @@ router.post("/api/signup", async (req, res) => {
 }); //working
 
 //-------------------USER ROUTES-------------------------------
+
+//GET DATA USER
+
+router.get("/api/user/get", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { userCode } = req.body;
+
+    let user = await UserModel.findOne({ code: userCode }).exec();
+
+    if (user) res.json(user);
+    else res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 //PRODUCTS
 router.get("/api/products/get", async (req, res) => {

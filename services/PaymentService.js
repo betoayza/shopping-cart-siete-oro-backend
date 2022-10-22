@@ -10,7 +10,7 @@ export class PaymentService {
       currency_id: "ARS",
       picture_url: "",
       description: item.description,
-      category_id: "category123",
+      category_id: "Panificados",
       quantity: Number(item.toBuy),
       unit_price: item.price,
     }));
