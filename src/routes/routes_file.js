@@ -424,8 +424,8 @@ router.post("/api/signup", async (req, res) => {
 
 router.get("/api/user/get", async (req, res) => {
   try {
-    console.log(req.body);
-    const { userCode } = req.body;
+    console.log(req.query);
+    const { userCode } = req.query;
 
     let user = await UserModel.findOne({ code: userCode }).exec();
 
@@ -689,10 +689,21 @@ router.get("/api/user/shopping-cart", async (req, res) => {
     }).exec();
 
     if (shoppingCart) {
+      let cartProductsIDs = await shoppingCart.products.map((product) => {
+        return product.code;
+      });
+
+      let productsUpdated = await ProductModel.find({
+        code: { $in: cartProductsIDs },
+      });
+
+      shoppingCart.products = productsUpdated;
+      
+      await shoppingCart.save();
+
+      console.log(shoppingCart);
       res.json(shoppingCart);
-    } else {
-      res.json(null);
-    }
+    } else res.json(null);
   } catch (error) {
     console.error(error);
   }
