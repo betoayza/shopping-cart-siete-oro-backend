@@ -183,10 +183,10 @@ router.get("/api/admin/orders/search", async (req, res) => {
 //PRODUCTS
 router.get("/api/products/all", async (req, res) => {
   try {
-    let doc = await ProductModel.find({});
-    if (doc.length) {
-      console.log(doc);
-      res.json(doc);
+    let products = await ProductModel.find({});
+    if (products.length) {
+      //console.log(doc);
+      res.json(products);
     } else {
       res.json(null);
     }
@@ -290,22 +290,17 @@ router.put(
   upload.single("image"),
   async (req, res) => {
     try {
-      console.log(req.file); //image
-      console.log(req.body); //rest inputs
+      //console.log(req.file); //image
+      //console.log(req.body); //rest inputs
 
-      const { code } = req.body;
+      const { code, name, description, price, stock } = req.body;
       //validate product
-      let doc = await ProductModel.findOne({ code }).exec();
-      if (doc) {
-        const { name, description, price, stock } = req.body;
-        doc.name = name;
-        doc.description = description;
-        doc.price = price;
-        doc.stock = stock;
-        doc.image = req.file.buffer;
-
-        doc = await doc.save();
-        res.json(doc);
+      let productUpdated = await ProductModel.findOneAndUpdate(
+        { code },
+        { name, description, price, stock }
+      );
+      if (productUpdated) {
+        res.json(productUpdated);
       } else {
         res.json(null);
       }
@@ -664,10 +659,10 @@ router.delete("/api/user/orders/delete", async (req, res) => {
 
 router.get("/api/user/orders/all", async (req, res) => {
   try {
-    console.log(req.query);
+    //console.log(req.query);
     const { userCode } = req.query;
-    console.log(userCode);
-    let orders = await OrderModel.find({ userCode });
+    //console.log(userCode);
+    let orders = await OrderModel.find({ userCode: Number(userCode) });
     if (orders) {
       res.json(orders);
     } else {
@@ -681,29 +676,65 @@ router.get("/api/user/orders/all", async (req, res) => {
 //SHOPPING CART
 router.get("/api/user/shopping-cart", async (req, res) => {
   try {
-    console.log(req.query);
+    // console.log(req.query);
     const { userCode } = req.query;
 
     let shoppingCart = await ShoppingCartModel.findOne({
-      code: userCode,
+      code: Number(userCode),
     }).exec();
 
-    if (shoppingCart) {
-      let cartProductsIDs = await shoppingCart.products.map((product) => {
-        return product.code;
+    //if there are products in cart, keep refreshing them, except toBuy
+    if (shoppingCart.products.length) {
+      //cart items IDs
+
+      let productsIDs = shoppingCart.products.map((product) => {
+        return Number(product.code);
       });
 
+      console.log(productsIDs);
+
+      // products updated
       let productsUpdated = await ProductModel.find({
-        code: { $in: cartProductsIDs },
+        code: { $in: productsIDs },
       });
 
-      shoppingCart.products = productsUpdated;
-      
-      await shoppingCart.save();
+      console.log(productsUpdated.length);
 
-      console.log(shoppingCart);
-      res.json(shoppingCart);
-    } else res.json(null);
+      let productsResult = shoppingCart.products.map((product) => {
+        for (let product2 of productsUpdated) {
+          console.log(product2.name);
+          if (Number(product.code) === Number(product2.code)) {
+            product2.toBuy = product.toBuy;
+            return product2;
+          }
+        }
+      });
+
+      productsResult.forEach((product) => {
+        console.log(product.name, " | | | ", product.toBuy);
+      });
+
+      // shoppingCart.products = [];
+      // shoppingCart.products = productsResult;
+      // shoppingCart = await shoppingCart.save();
+
+      // update
+      shoppingCart = await ShoppingCartModel.findOneAndUpdate(
+        { code: Number(userCode) },
+        { products: productsResult }
+      );
+
+      console.log(shoppingCart.new);
+
+      // if (result.modifiedCount === 1) {
+      //   // get new shopping cart
+      //   shoppingCart = await ShoppingCartModel.findOne({
+      //     code: Number(userCode),
+      //   }).exec();
+      // }
+    }
+
+    res.json(shoppingCart);
   } catch (error) {
     console.error(error);
   }
@@ -734,40 +765,25 @@ router.get("/api/user/shopping-cart/check-item-added", async (req, res) => {
 
 router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { prodCode, userCode } = req.body;
 
-    // let product = await ShoppingCartModel.findOne({
-    //   $and: [{ code: userCode }, { $get: { products: { code: prodCode } } }],
-    // }).exec();
+    let updateResult = await ShoppingCartModel.updateOne(
+      { code: Number(userCode) },
+      { $pull: { products: { code: Number(prodCode) } } }
+    );
 
-    let added = await ShoppingCartModel.findOne({
-      $and: [
-        {
-          code: Number(userCode),
-        },
-        {
-          products: { $elemMatch: { code: Number(prodCode) } },
-        },
-      ],
-    }).exec();
+    console.log(updateResult);
 
-    if (added) {
-      //make delete
-
-      let updateResult = await ShoppingCartModel.updateOne(
-        { code: Number(userCode) },
-        { $pull: { products: { code: Number(prodCode) } } }
-      );
-
+    if (updateResult.modifiedCount === 1) {
       let shoppingCartUpdated = await ShoppingCartModel.findOne({
-        code: userCode,
+        code: Number(userCode),
       }).exec();
 
+      console.log("Quedan: ", shoppingCartUpdated.products.length);
+
       res.json(shoppingCartUpdated);
-    } else {
-      res.json(null);
-    }
+    } else res.json(null);
   } catch (error) {
     console.error(error);
   }
@@ -775,15 +791,16 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
 
 router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { userCode } = req.body;
+
     let shoppingCart = await ShoppingCartModel.findOne({
       code: userCode,
     }).exec();
+
     if (shoppingCart) {
-      console.log(shoppingCart);
       shoppingCart.products = [];
-      shoppingCart = shoppingCart.save();
+      shoppingCart = await shoppingCart.save();
       // await ShoppingCartModel.updateOne(
       //   { code: userCode },
       //   { $pull: { products: {} } }
@@ -801,18 +818,22 @@ router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
 
 router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
   try {
-    console.log("asd: ", req.body);
+    //console.log(req.body);
     const { userCode, toBuy, itemIndex } = req.body;
+
     let shoppingCart = await ShoppingCartModel.findOne({
-      code: userCode,
+      code: Number(userCode),
     }).exec();
-    if (shoppingCart && shoppingCart.products.length) {
-      //shopping cart has 1+ products
-      let shoppingCart = await ShoppingCartModel.updateOne(
-        { code: userCode },
-        { $set: { [`products.${itemIndex}.toBuy`]: toBuy } }
+
+    if (shoppingCart) {
+      shoppingCart = await ShoppingCartModel.findOneAndUpdate(
+        {
+          code: Number(userCode),
+        },
+        { [`products.${itemIndex}.toBuy`]: toBuy }
       );
-      console.log(shoppingCart);
+
+      console.log("To Buy updated: ", shoppingCart.products[itemIndex].toBuy);
       res.json(shoppingCart);
     } else res.json(shoppingCart); //response with empty shopping cart
   } catch (error) {
