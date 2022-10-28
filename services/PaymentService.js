@@ -4,14 +4,14 @@ export class PaymentService {
   async createPayment(items2, userCode) {
     const url = "https://api.mercadopago.com/checkout/preferences";
 
-    let items3 = await items2.map((item) => ({
+    let items3 = items2.map((item) => ({
       id: item._id,
       title: item.name,
       currency_id: "ARS",
       picture_url: "",
       description: item.description,
       category_id: "Panificados",
-      quantity: Number(item.toBuy),
+      quantity: item.toBuy,
       unit_price: item.price,
     }));
 

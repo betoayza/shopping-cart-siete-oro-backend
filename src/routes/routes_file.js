@@ -595,9 +595,11 @@ router.get("/api/user/orders", async (req, res) => {
 
 router.post("/api/user/orders/add", async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     const { userCode, items, installments, totalAmount } = req.body;
+
     let user = await UserModel.findOne({ code: userCode }).exec();
+
     if (user) {
       console.log("Items: ", items);
 
@@ -605,15 +607,15 @@ router.post("/api/user/orders/add", async (req, res) => {
         const updateStock = async (item) => {
           //updated product stock
           let product = await ProductModel.findOne({
-            code: item.code,
+            _id: item.id,
           }).exec();
 
-          product.stock -= item.toBuy;
+          product.stock -= Number(item.quantity);
           product.save();
         };
         updateStock(item);
 
-        return item.code;
+        return { id: item.id, quantity: item.quantity };
       });
 
       console.log("Products updated: ", products);
@@ -640,11 +642,13 @@ router.post("/api/user/orders/add", async (req, res) => {
 
 router.delete("/api/user/orders/delete", async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { code, userCode } = req.body;
+
     let order = await OrderModel.findOne({
       $and: [{ code }, { userCode }, { status: "En curso" }],
     }).exec();
+    
     if (order) {
       order.status = "Cancelado";
       order = order.save();
@@ -787,7 +791,7 @@ router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
       { products: [] }
     );
 
-    console.log(shoppingCart);
+    //console.log(shoppingCart);
 
     if (shoppingCart) res.json(shoppingCart);
     else res.json(null);
@@ -809,7 +813,7 @@ router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
     );
 
     console.log("To Buy updated: ", shoppingCart.products[itemIndex].toBuy);
-    res.json(true);
+    res.json(shoppingCart);
   } catch (error) {
     console.error(error);
   }
