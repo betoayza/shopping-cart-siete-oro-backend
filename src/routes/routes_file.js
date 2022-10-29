@@ -656,9 +656,9 @@ router.delete("/api/user/orders/delete", async (req, res) => {
         return mongoose.Types.ObjectId(item.id);
       });
 
-      console.log(arrItemsIDs); 
+      console.log(arrItemsIDs);
 
-      let products = await ProductModel.find({_id: { $in: arrItemsIDs }});
+      let products = await ProductModel.find({ _id: { $in: arrItemsIDs } });
 
       console.log(products.length); //hasta aca funciona
 
@@ -670,13 +670,18 @@ router.delete("/api/user/orders/delete", async (req, res) => {
 
       //si algun id coincide con
       products = products.map(async (product) => {
+        console.log(product._id.toString());
         for (let item of orderItemsData) {
-          if (product._id === item.id) {
-            let newStock = product.stock + item.quantity;
-            return await ProductModel.findOneAndUpdate(
-              { _id: item.id },
+          console.log(item.id);
+
+          if (product._id.toString() === item.id) {
+            let newStock = Number(product.stock) + Number(item.quantity);
+            await ProductModel.findOneAndUpdate(
+              { _id: mongoose.Types.ObjectId(item.id) },
               { stock: newStock }
             );
+          } else {
+            console.log("No paso el if");
           }
         }
       });
@@ -685,14 +690,14 @@ router.delete("/api/user/orders/delete", async (req, res) => {
         return { ...product, ["image"]: "" };
       });
 
-      // console.log(prods);
+      console.log(prods);
 
-      // order.status = "Cancelado";
-      // order = await order.save();
+      order.status = "Cancelado";
+      order = await order.save();
 
-      // //return orders updated
-      // let orders = await OrderModel.find({ userCode });
-      // res.json(orders);
+      //return orders updated
+      let orders = await OrderModel.find({ userCode });
+      res.json(orders);
     } else {
       res.json(null);
     }
