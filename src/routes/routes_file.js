@@ -7,6 +7,7 @@ import multer from "multer";
 import { PaymentController } from "../../controllers/PaymentController.js";
 import { PaymentService } from "../../services/PaymentService.js";
 import moment from "moment";
+import mongoose from "mongoose";
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -643,18 +644,55 @@ router.post("/api/user/orders/add", async (req, res) => {
 router.delete("/api/user/orders/delete", async (req, res) => {
   try {
     // console.log(req.body);
-    const { code, userCode } = req.body;
+    const { code, userCode, orderItemsData } = req.body;
 
     let order = await OrderModel.findOne({
       $and: [{ code }, { userCode }, { status: "En curso" }],
     }).exec();
-    
+
     if (order) {
-      order.status = "Cancelado";
-      order = order.save();
-      //find all user orders
-      let orders = await OrderModel.find({ userCode });
-      res.json(orders);
+      // Restore products stocks
+      const arrItemsIDs = orderItemsData.map((item) => {
+        return mongoose.Types.ObjectId(item.id);
+      });
+
+      console.log(arrItemsIDs); 
+
+      let products = await ProductModel.find({_id: { $in: arrItemsIDs }});
+
+      console.log(products.length); //hasta aca funciona
+
+      let prods = products.map((product) => {
+        return { ...product, ["image"]: "" };
+      });
+
+      //console.log(prods);
+
+      //si algun id coincide con
+      products = products.map(async (product) => {
+        for (let item of orderItemsData) {
+          if (product._id === item.id) {
+            let newStock = product.stock + item.quantity;
+            return await ProductModel.findOneAndUpdate(
+              { _id: item.id },
+              { stock: newStock }
+            );
+          }
+        }
+      });
+
+      prods = products.map((product) => {
+        return { ...product, ["image"]: "" };
+      });
+
+      // console.log(prods);
+
+      // order.status = "Cancelado";
+      // order = await order.save();
+
+      // //return orders updated
+      // let orders = await OrderModel.find({ userCode });
+      // res.json(orders);
     } else {
       res.json(null);
     }
