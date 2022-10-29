@@ -722,6 +722,32 @@ router.get("/api/user/orders/all", async (req, res) => {
   }
 }); //working
 
+router.get("/api/user/orders/items/list", async (req, res) => {
+  try {
+    console.log(req.query);
+    let { orderItems } = req.query;
+
+    orderItems = orderItems.map((item) => {
+      return JSON.parse(item);
+    })
+    console.log(orderItems);
+
+    let arrItemsIDs = orderItems.map((item) => {
+      return mongoose.Types.ObjectId(item.id);
+    });
+
+    console.log(arrItemsIDs)
+
+    let productsFound = await ProductModel.find({ _id: { $in: arrItemsIDs } });
+  
+    console.log(productsFound.length);
+    
+    res.json(productsFound);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 //SHOPPING CART
 router.get("/api/user/shopping-cart", async (req, res) => {
   try {
