@@ -579,7 +579,7 @@ router.delete("/api/user/comment/delete", async (req, res) => {
 //ORDERS
 router.get("/api/user/orders", async (req, res) => {
   try {
-    console.log(req.query);
+    //console.log(req.query);
     const { userCode } = req.query;
     console.log(userCode);
 
@@ -724,24 +724,40 @@ router.get("/api/user/orders/all", async (req, res) => {
 
 router.get("/api/user/orders/items/list", async (req, res) => {
   try {
-    console.log(req.query);
+    //console.log(req.query);
     let { orderItems } = req.query;
 
     orderItems = orderItems.map((item) => {
       return JSON.parse(item);
-    })
+    });
     console.log(orderItems);
 
     let arrItemsIDs = orderItems.map((item) => {
       return mongoose.Types.ObjectId(item.id);
     });
 
-    console.log(arrItemsIDs)
+    console.log(arrItemsIDs);
 
     let productsFound = await ProductModel.find({ _id: { $in: arrItemsIDs } });
-  
+
+    // console.log({...productsFound[0], image: ""});
+    console.log(productsFound[0].name);
     console.log(productsFound.length);
-    
+
+    productsFound = productsFound.map((product) => {
+      for (let item of orderItems) {
+        if (product._id.toString() === item.id) {
+          //console.log("quantity: ", Number(item.quantity));
+          product = product.toObject();
+          product.quantity = Number(item.quantity);          
+          console.log(product);
+          return (product);
+        }
+      }
+    });
+
+    // console.log(productsFound);
+
     res.json(productsFound);
   } catch (error) {
     console.error(error);
