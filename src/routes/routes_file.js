@@ -474,10 +474,13 @@ router.get("/api/product/code", async (req, res) => {
 router.get("/api/products/get/list", async (req, res) => {
   try {
     //console.log(req.query);
-    const { itemsIDs } = req.query;
+    let { itemsIDs } = req.query;
+    itemsIDs = itemsIDs.map((id) => {
+      return mongoose.Types.ObjectId(id);
+    });
 
     let products = await ProductModel.find({
-      code: { $in: itemsIDs },
+      _id: { $in: itemsIDs },
     });
     console.log(products);
 
@@ -749,9 +752,9 @@ router.get("/api/user/orders/items/list", async (req, res) => {
         if (product._id.toString() === item.id) {
           //console.log("quantity: ", Number(item.quantity));
           product = product.toObject();
-          product.quantity = Number(item.quantity);          
+          product.quantity = Number(item.quantity);
           console.log(product);
-          return (product);
+          return product;
         }
       }
     });
