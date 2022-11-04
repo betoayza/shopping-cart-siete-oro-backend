@@ -8,6 +8,10 @@ import cors from "cors";
 
 const port_number = process.env.PORT || 4000;
 
+//cors support
+// app.use(cors({ origin: true }));
+app.use(cors());
+
 //Para que el navegador muestre todo en formato json
 app.use(express.json());
 
@@ -21,14 +25,9 @@ app.use(
 //Morgan
 app.use(morgan("dev"));
 
-//cors support
-// app.use(cors({ origin: true }));
-app.use(cors());
 
 //Routes
 app.use(router);
-
-app.get("/favicon.ico", (req, res) => res.status(204));
 
 //upload form with image
 
