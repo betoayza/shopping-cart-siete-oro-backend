@@ -1,10 +1,10 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
+import cors from "cors";
+// import * as dotenv from 'dotenv';
+// dotenv.config();
 import express from "express";
 const app = express();
 import morgan from "morgan";
 import router from "./routes/routes_file.js";
-import cors from "cors";
 
 const port_number = process.env.PORT || 4000;
 
@@ -34,6 +34,6 @@ app.use(router);
 // app.use('/uploads', express.static('uploads'));
 
 //5) Starting server
-// app.listen(port_number, () => {
-//   console.log("Servidor corriendo en puerto 4000...");
-// });
+app.listen(port_number, () => {
+  console.log("Servidor corriendo en puerto 4000...");
+});
