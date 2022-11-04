@@ -16,13 +16,13 @@ const upload = multer({
 
 const router = Router();
 
-router.get("/api", (req, res) => {
-  res.send("Server working on port 4000!");
+router.get("/", (req, res) => {
+  res.send("Server working!");
 });
 //---------------ADMIN ROUTES----------------------
 
 //USERS
-router.get("/api/admin/users/all", async (req, res) => {
+router.get("/admin/users/all", async (req, res) => {
   try {
     console.log(req.query);
     let doc = await UserModel.find({});
@@ -37,7 +37,7 @@ router.get("/api/admin/users/all", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/users/search/one", async (req, res) => {
+router.get("/admin/users/search/one", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -54,7 +54,7 @@ router.get("/api/admin/users/search/one", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/users/search", async (req, res) => {
+router.get("/admin/users/search", async (req, res) => {
   try {
     console.log(req.query);
     const { term } = req.query;
@@ -84,7 +84,7 @@ router.get("/api/admin/users/search", async (req, res) => {
   }
 }); //working
 
-router.delete("/api/admin/users/delete", async (req, res) => {
+router.delete("/admin/users/delete", async (req, res) => {
   try {
     console.log(req.body);
     const { code } = req.body;
@@ -104,7 +104,7 @@ router.delete("/api/admin/users/delete", async (req, res) => {
   }
 }); //working
 
-router.put("/api/admin/users/activate", async (req, res) => {
+router.put("/admin/users/activate", async (req, res) => {
   try {
     console.log(req.body);
     const { code } = req.body;
@@ -124,7 +124,7 @@ router.put("/api/admin/users/activate", async (req, res) => {
 }); //working
 
 //ORDERS
-router.get("/api/admin/orders/all", async (req, res) => {
+router.get("/admin/orders/all", async (req, res) => {
   try {
     let doc = await OrderModel.find({});
     if (doc.length) {
@@ -138,7 +138,7 @@ router.get("/api/admin/orders/all", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/orders/code", async (req, res) => {
+router.get("/admin/orders/code", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -156,7 +156,7 @@ router.get("/api/admin/orders/code", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/orders/search", async (req, res) => {
+router.get("/admin/orders/search", async (req, res) => {
   try {
     console.log(req.query);
     const { term } = req.query;
@@ -182,7 +182,7 @@ router.get("/api/admin/orders/search", async (req, res) => {
 }); //working
 
 //PRODUCTS
-router.get("/api/products/all", async (req, res) => {
+router.get("/products/all", async (req, res) => {
   try {
     let products = await ProductModel.find({});
     if (products.length) {
@@ -196,7 +196,7 @@ router.get("/api/products/all", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/products/search", async (req, res) => {
+router.get("/admin/products/search", async (req, res) => {
   try {
     console.log(req.query);
     const { term } = req.query;
@@ -222,54 +222,50 @@ router.get("/api/admin/products/search", async (req, res) => {
   }
 }); //working
 
-router.post(
-  "/api/admin/product/add",
-  upload.single("image"),
-  async (req, res) => {
-    try {
-      console.log(req.file); //image
-      console.log(req.body); //rest inputs
+router.post("/admin/product/add", upload.single("image"), async (req, res) => {
+  try {
+    console.log(req.file); //image
+    console.log(req.body); //rest inputs
 
-      const { code, name, description, status } = req.body;
-      //validate product
-      let doc = await ProductModel.findOne({
-        $and: [
-          {
-            $or: [{ code }, { name }],
-          },
-          { description },
-          { status },
-        ],
-      }).exec();
-      if (doc) {
-        res.json(null);
-      } else {
-        //If not matches, add product
-        const { name, description, price, stock, toBuy, status } = req.body;
-        //const {destination, originalname}=req.file;
-
-        const newProduct = new ProductModel({
-          code,
-          name,
-          description,
-          price,
-          stock,
-          image: req.file.buffer,
-          toBuy,
-          comments: [],
-          status,
-        });
-        doc = await newProduct.save();
-        res.json(doc);
-      }
-    } catch (error) {
-      console.error(error);
+    const { code, name, description, status } = req.body;
+    //validate product
+    let doc = await ProductModel.findOne({
+      $and: [
+        {
+          $or: [{ code }, { name }],
+        },
+        { description },
+        { status },
+      ],
+    }).exec();
+    if (doc) {
       res.json(null);
-    }
-  }
-); //working
+    } else {
+      //If not matches, add product
+      const { name, description, price, stock, toBuy, status } = req.body;
+      //const {destination, originalname}=req.file;
 
-router.put("/api/admin/products/activate", async (req, res) => {
+      const newProduct = new ProductModel({
+        code,
+        name,
+        description,
+        price,
+        stock,
+        image: req.file.buffer,
+        toBuy,
+        comments: [],
+        status,
+      });
+      doc = await newProduct.save();
+      res.json(doc);
+    }
+  } catch (error) {
+    console.error(error);
+    res.json(null);
+  }
+}); //working
+
+router.put("/admin/products/activate", async (req, res) => {
   try {
     console.log(req.body);
     const { code } = req.body;
@@ -287,7 +283,7 @@ router.put("/api/admin/products/activate", async (req, res) => {
 }); //working
 
 router.put(
-  "/api/admin/product/modify",
+  "/admin/product/modify",
   upload.single("image"),
   async (req, res) => {
     try {
@@ -312,7 +308,7 @@ router.put(
   }
 ); //working
 
-router.delete("/api/admin/products/delete", async (req, res) => {
+router.delete("/admin/products/delete", async (req, res) => {
   try {
     console.log(req.body);
     const { code } = req.body;
@@ -332,7 +328,7 @@ router.delete("/api/admin/products/delete", async (req, res) => {
   }
 }); //working
 
-router.get("/api/admin/products/search/code", async (req, res) => {
+router.get("/admin/products/search/code", async (req, res) => {
   try {
     console.log(req.query);
     const { code } = req.query;
@@ -353,7 +349,7 @@ router.get("/api/admin/products/search/code", async (req, res) => {
 //-----------------LOGIN & SIGNUP-----------------------
 
 //LOGIN & SIGNUP (working)
-router.get("/api/login", async (req, res) => {
+router.get("/login", async (req, res) => {
   try {
     console.log(req.query);
     const { data, password } = req.query;
@@ -374,7 +370,7 @@ router.get("/api/login", async (req, res) => {
   }
 }); //working
 
-router.post("/api/signup", async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     console.log(req.body);
     const { email, username } = req.body;
@@ -418,7 +414,7 @@ router.post("/api/signup", async (req, res) => {
 
 //GET DATA USER
 
-router.get("/api/user/get", async (req, res) => {
+router.get("/user/get", async (req, res) => {
   try {
     console.log(req.query);
     const { userCode } = req.query;
@@ -433,7 +429,7 @@ router.get("/api/user/get", async (req, res) => {
 });
 
 //PRODUCTS
-router.get("/api/products/get", async (req, res) => {
+router.get("/products/get", async (req, res) => {
   try {
     console.log(req.query);
     const { term } = req.query;
@@ -457,7 +453,7 @@ router.get("/api/products/get", async (req, res) => {
   }
 }); //working
 
-router.get("/api/product/code", async (req, res) => {
+router.get("/product/code", async (req, res) => {
   try {
     console.log(req.query);
     const { productCode } = req.query;
@@ -471,7 +467,7 @@ router.get("/api/product/code", async (req, res) => {
   }
 }); //working
 
-router.get("/api/products/get/list", async (req, res) => {
+router.get("/products/get/list", async (req, res) => {
   try {
     //console.log(req.query);
     let { itemsIDs } = req.query;
@@ -492,7 +488,7 @@ router.get("/api/products/get/list", async (req, res) => {
 }); //working
 
 //EDIT PROFILE
-router.put("/api/user/profile/modify", async (req, res) => {
+router.put("/user/profile/modify", async (req, res) => {
   try {
     console.log(req.body);
     const {
@@ -534,7 +530,7 @@ router.put("/api/user/profile/modify", async (req, res) => {
   }
 }); //working
 
-router.post("/api/user/comment/add", async (req, res) => {
+router.post("/user/comment/add", async (req, res) => {
   try {
     console.log(req.body);
     let { userCode, comment, productCode } = req.body;
@@ -557,7 +553,7 @@ router.post("/api/user/comment/add", async (req, res) => {
   }
 }); //working
 
-router.delete("/api/user/comment/delete", async (req, res) => {
+router.delete("/user/comment/delete", async (req, res) => {
   try {
     const { index, productCode } = req.body;
 
@@ -580,7 +576,7 @@ router.delete("/api/user/comment/delete", async (req, res) => {
 });
 
 //ORDERS
-router.get("/api/user/orders", async (req, res) => {
+router.get("/user/orders", async (req, res) => {
   try {
     //console.log(req.query);
     const { userCode } = req.query;
@@ -597,7 +593,7 @@ router.get("/api/user/orders", async (req, res) => {
   }
 }); //working
 
-router.post("/api/user/orders/add", async (req, res) => {
+router.post("/user/orders/add", async (req, res) => {
   try {
     //console.log(req.body);
     const { userCode, items, installments, totalAmount } = req.body;
@@ -644,7 +640,7 @@ router.post("/api/user/orders/add", async (req, res) => {
   }
 }); //working
 
-router.delete("/api/user/orders/delete", async (req, res) => {
+router.delete("/user/orders/delete", async (req, res) => {
   try {
     // console.log(req.body);
     const { code, userCode, orderItemsData } = req.body;
@@ -709,7 +705,7 @@ router.delete("/api/user/orders/delete", async (req, res) => {
   }
 }); //working
 
-router.get("/api/user/orders/all", async (req, res) => {
+router.get("/user/orders/all", async (req, res) => {
   try {
     //console.log(req.query);
     const { userCode } = req.query;
@@ -725,7 +721,7 @@ router.get("/api/user/orders/all", async (req, res) => {
   }
 }); //working
 
-router.get("/api/user/orders/items/list", async (req, res) => {
+router.get("/user/orders/items/list", async (req, res) => {
   try {
     //console.log(req.query);
     let { orderItems } = req.query;
@@ -768,7 +764,7 @@ router.get("/api/user/orders/items/list", async (req, res) => {
 });
 
 //SHOPPING CART
-router.get("/api/user/shopping-cart", async (req, res) => {
+router.get("/user/shopping-cart", async (req, res) => {
   try {
     // console.log(req.query);
     const { userCode } = req.query;
@@ -821,7 +817,7 @@ router.get("/api/user/shopping-cart", async (req, res) => {
   }
 }); //working
 
-router.get("/api/user/shopping-cart/check-item-added", async (req, res) => {
+router.get("/user/shopping-cart/check-item-added", async (req, res) => {
   try {
     //console.log(req.query);
     const { userCode, prodCode } = req.query;
@@ -844,7 +840,7 @@ router.get("/api/user/shopping-cart/check-item-added", async (req, res) => {
   }
 }); //working
 
-router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
+router.delete(`/user/shopping-cart/delete`, async (req, res) => {
   try {
     // console.log(req.body);
     const { prodCode, userCode } = req.body;
@@ -869,7 +865,7 @@ router.delete(`/api/user/shopping-cart/delete`, async (req, res) => {
   }
 }); //working
 
-router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
+router.delete("/user/shopping-cart/delete/all", async (req, res) => {
   try {
     // console.log(req.body);
     const { userCode } = req.body;
@@ -888,7 +884,7 @@ router.delete("/api/user/shopping-cart/delete/all", async (req, res) => {
   }
 }); //working
 
-router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
+router.put("/user/shopping-cart/update/toBuy", async (req, res) => {
   try {
     //console.log(req.body);
     const { userCode, toBuy, itemIndex } = req.body;
@@ -907,7 +903,7 @@ router.put("/api/user/shopping-cart/update/toBuy", async (req, res) => {
   }
 }); //working
 
-router.put("/api/user/shopping-cart/add", async (req, res) => {
+router.put("/user/shopping-cart/add", async (req, res) => {
   try {
     console.log(req.body);
     const { productCode, userCode } = req.body;
@@ -948,7 +944,7 @@ router.put("/api/user/shopping-cart/add", async (req, res) => {
 //MERCADO PAGO
 const paymentInstance = new PaymentController(new PaymentService());
 
-router.post("/api/payment", (req, res) => {
+router.post("/payment", (req, res) => {
   try {
     paymentInstance.getPaymentLink(req, res);
   } catch (error) {
