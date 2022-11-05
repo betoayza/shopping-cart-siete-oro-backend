@@ -861,7 +861,7 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
 
     console.log("Quedan: ", shoppingCartUpdated.products.length);
 
-    res.json(true);
+    res.json(shoppingCartUpdated);
   } catch (error) {
     console.error(error);
   }
