@@ -19,9 +19,9 @@ export class PaymentService {
       payer_email: "payer_email@test.com",
       items: items3,
       back_urls: {
-        failure: `http://127.0.0.1:12345/user/shopping-cart/${userCode}`,
-        pending: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/pending`,
-        success: `http://127.0.0.1:12345/user/shopping-cart/${userCode}/success`,
+        failure: `https://betoayza.github.io/shopping-cart-siete-oro-frontend/user/shopping-cart/${userCode}`,
+        pending: `https://betoayza.github.io/shopping-cart-siete-oro-frontend/user/shopping-cart/${userCode}/pending`,
+        success: `https://betoayza.github.io/shopping-cart-siete-oro-frontend/user/shopping-cart/${userCode}/success`,
       },
     };
 
