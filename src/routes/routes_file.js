@@ -413,7 +413,7 @@ router.post("/signup", async (req, res) => {
 }); //working
 
 //-------------------NOT USER ---------------------------
-router.get("/products/active/all", async (req, req) => {
+router.get("/products/active/all", async (req, res) => {
   try {
     let products = await ProductModel.find({ status: "Activo" });
     res.json(products);
