@@ -467,7 +467,7 @@ router.get("/products/get", async (req, res) => {
 
 router.get("/product/code", async (req, res) => {
   try {
-    console.log(req.query);
+    //console.log(req.query);
     const { productCode } = req.query;
 
     let product = await ProductModel.findOne({ code: productCode }).exec();
