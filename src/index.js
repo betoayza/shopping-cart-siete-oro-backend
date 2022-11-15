@@ -25,22 +25,20 @@ app.use(
 //Morgan
 app.use(morgan("dev"));
 
-app.get("/", (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      name: "Server running on port 5000 :)",
-    },
-  });
-});
+// app.get("/", (req, res, next) => {
+//   res.status(200).json({
+//     status: "success",
+//     data: {
+//       name: "Server running on port 5000 :)",
+//     },
+//   });
+// });
+
+app.use();
 
 
 //Routes
 app.use(router);
-
-//upload form with image
-
-// app.use('/uploads', express.static('uploads'));
 
 //5) Starting server
 app.listen(port_number, () => {
