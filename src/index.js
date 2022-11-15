@@ -34,11 +34,11 @@ app.use(morgan("dev"));
 //   });
 // });
 
-app.get("/favicon.ico", (req, res) => res.status(204));
-
-
 //Routes
 app.use(router);
+
+app.get("/favicon.ico", (req, res) => res.status(204));
+
 
 //5) Starting server
 app.listen(port_number, () => {
