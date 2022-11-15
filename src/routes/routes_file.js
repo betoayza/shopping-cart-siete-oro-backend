@@ -20,7 +20,6 @@ router.get("/", (req, res) => {
   res.send("Server working!");
 });
 
-router.get("/favicon.ico", (req, res) => res.status(204));
 //---------------ADMIN ROUTES----------------------
 
 //USERS

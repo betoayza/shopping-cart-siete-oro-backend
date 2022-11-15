@@ -36,6 +36,8 @@ app.use(morgan("dev"));
 
 app.use();
 
+app.get("/favicon.ico", (req, res) => res.status(204));
+
 
 //Routes
 app.use(router);
