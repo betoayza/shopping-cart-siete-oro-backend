@@ -1,6 +1,6 @@
 import cors from "cors";
-// import * as dotenv from 'dotenv';
-// dotenv.config();
+import * as dotenv from 'dotenv';
+dotenv.config();
 import express from "express";
 const app = express();
 import morgan from "morgan";
