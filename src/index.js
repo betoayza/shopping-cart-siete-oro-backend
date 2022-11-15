@@ -25,6 +25,15 @@ app.use(
 //Morgan
 app.use(morgan("dev"));
 
+app.get("/", (req, res, next) => {
+  res.status(200).json({
+    status: "success",
+    data: {
+      name: "Server running on port 5000 :)",
+    },
+  });
+});
+
 
 //Routes
 app.use(router);
