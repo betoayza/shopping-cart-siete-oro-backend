@@ -182,6 +182,22 @@ router.get("/admin/orders/search", async (req, res) => {
   }
 }); //working
 
+router.delete("/admin/orders/delete", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { code } = req.body;
+
+    let order = await OrderModel.findOneAndUpdate(
+      { code },
+      { status: "Cancelado" }
+    );
+
+    order ? res.json(order) : res.json(null);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 //PRODUCTS
 router.get("/products/all", async (req, res) => {
   try {
