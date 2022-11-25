@@ -800,6 +800,8 @@ router.get("/user/shopping-cart", async (req, res) => {
       code: Number(userCode),
     }).exec();
 
+    shoppingCart ? res.json(shoppingCart) : res.json(null);
+
     //if there are products in cart, keep refreshing them, except toBuy
     // if (shoppingCart.products.length) {
     //   //cart items IDs
@@ -837,8 +839,6 @@ router.get("/user/shopping-cart", async (req, res) => {
     //     { products: productsResult }
     //   );
     // }
-    if (shoppingCart) res.json(shoppingCart);
-    else res.json(null);
   } catch (error) {
     console.error(error);
   }
