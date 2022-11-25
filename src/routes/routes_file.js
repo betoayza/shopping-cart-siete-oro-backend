@@ -189,7 +189,7 @@ router.put("/admin/orders/change-state", async (req, res) => {
 
     let order = await OrderModel.findOneAndUpdate(
       { code: Number(code) },
-      { status: `${newState}` }
+      { status: newState }
     );
 
     order ? res.json(order) : res.json(null);
