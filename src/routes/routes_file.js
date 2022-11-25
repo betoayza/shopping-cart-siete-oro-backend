@@ -188,7 +188,7 @@ router.put("/admin/orders/change-state", async (req, res) => {
     const { code, newState } = req.body;
 
     let order = await OrderModel.findOneAndUpdate(
-      { code },
+      { code: Number(code) },
       { status: `${newState}` }
     );
 
