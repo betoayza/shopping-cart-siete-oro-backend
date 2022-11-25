@@ -182,14 +182,14 @@ router.get("/admin/orders/search", async (req, res) => {
   }
 }); //working
 
-router.delete("/admin/orders/delete", async (req, res) => {
+router.put("/admin/orders/change-state", async (req, res) => {
   try {
     console.log(req.body);
-    const { code } = req.body;
+    const { code, newState } = req.body;
 
     let order = await OrderModel.findOneAndUpdate(
       { code },
-      { status: "Cancelado" }
+      { status: `${newState}` }
     );
 
     order ? res.json(order) : res.json(null);
