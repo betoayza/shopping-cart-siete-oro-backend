@@ -129,7 +129,7 @@ router.get("/admin/orders/all", async (req, res) => {
   try {
     let doc = await OrderModel.find({});
     if (doc.length) {
-      console.log(doc);
+      //console.log(doc);
       res.json(doc);
     } else {
       res.json(null);
