@@ -1,11 +1,8 @@
-// import * as dotenv from 'dotenv';
-// dotenv.config();
 import express from "express";
-const app = express();
-import morgan from "morgan";
 import router from "./routes/routes_file.js";
 import cors from "cors";
 
+const app = express();
 const port_number = process.env.PORT || 4000;
 
 app.use(cors()); // allows any origin
@@ -19,18 +16,6 @@ app.use(
     extended: true,
   })
 );
-
-//Morgan
-app.use(morgan("dev"));
-
-// app.get("/", (req, res, next) => {
-//   res.status(200).json({
-//     status: "success",
-//     data: {
-//       name: "Server running on port 5000 :)",
-//     },
-//   });
-// });
 
 //Routes
 app.use(router);
