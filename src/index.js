@@ -38,7 +38,7 @@ app.use(router);
 app.get("/favicon.ico", (req, res) => res.status(204));
 
 
-//5) Starting server
-// app.listen(port_number, () => {
-//   console.log("Servidor corriendo...");
-// });
+// 5) Starting server
+app.listen(port_number, () => {
+  console.log("Servidor corriendo...");
+});
