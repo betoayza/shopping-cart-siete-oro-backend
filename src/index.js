@@ -8,9 +8,7 @@ import router from "./routes/routes_file.js";
 
 const port_number = process.env.PORT || 4000;
 
-//cors support
-// app.use(cors({ origin: true }));
-app.use(cors());
+app.use(cors()); // allows any origin
 
 //Para que el navegador muestre todo en formato json
 app.use(express.json());
