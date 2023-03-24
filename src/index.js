@@ -40,5 +40,5 @@ app.get("/favicon.ico", (req, res) => res.status(204));
 
 //5) Starting server
 app.listen(port_number, () => {
-  console.log("Servidor corriendo en puerto 4000...");
+  console.log("Servidor corriendo...");
 });
