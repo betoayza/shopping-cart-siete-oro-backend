@@ -5,7 +5,12 @@ import cors from "cors";
 const app = express();
 const port_number = process.env.PORT || 4000;
 
-app.use(cors()); // allows any origin
+app.use(cors({
+  origin: [
+    "https://betoayza.github.io",
+    "127.0.0.1"
+  ]
+})); // allows any origin
 
 //Para que el navegador muestre todo en formato json
 app.use(express.json());
