@@ -6,13 +6,6 @@ const app = express();
 const port_number = process.env.PORT || 4000;
 
 app.use(cors()) // allows any origin
-//   {
-//   origin: [
-//     "https://betoayza.github.io",
-//     "127.0.0.1"
-//   ]
-// }
-
 //Para que el navegador muestre todo en formato json
 app.use(express.json());
 
@@ -27,7 +20,6 @@ app.use(
 app.use(router);
 
 app.get("/favicon.ico", (req, res) => res.status(204));
-
 
 // 5) Starting server
 app.listen(port_number, () => {
