@@ -272,7 +272,7 @@ router.post("/admin/product/add", upload.single("image"), async (req, res) => {
         toBuy,
         comments: [],
         status,
-        isInCart: false
+        isInCart: false,
       });
       doc = await newProduct.save();
       res.json(doc);
