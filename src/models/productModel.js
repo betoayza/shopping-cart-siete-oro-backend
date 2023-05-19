@@ -20,6 +20,7 @@ const productSchema = new Schema(
     image: { type: Buffer, required: true },
     toBuy: { type: Number, required: true },
     comments: { type: Array, default: [] },
+    isInCart: { type: Boolean, required: true },
     status: { type: String, required: true },
   },
   {
