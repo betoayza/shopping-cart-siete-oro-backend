@@ -870,15 +870,9 @@ router.get("/user/shopping-cart/check-item-added", async (req, res) => {
 
 router.delete(`/user/shopping-cart/delete`, async (req, res) => {
   try {
-    // console.log(req.body);
-    const { prodCode, userCode } = req.body;
+    const { prodCode, userCode } = req.body; 
 
-    // let updateResult = await ShoppingCartModel.updateOne(
-    //   { code: Number(userCode) },
-    //   { $pull: { products: { code: Number(prodCode) } } }
-    // );
-
-    let shoppingCartUpdated = await ShoppingCartModel.findOneAndUpdate(
+    const shoppingCartUpdated = await ShoppingCartModel.findOneAndUpdate(
       {
         code: Number(userCode),
       },
@@ -940,7 +934,6 @@ router.put("/user/shopping-cart/update/toBuy", async (req, res) => {
 
 router.put("/user/shopping-cart/add", async (req, res) => {
   try {
-    console.log(req.body);
     const { productCode, userCode } = req.body;
 
     let shoppingCart = await ShoppingCartModel.findOne({
@@ -964,7 +957,7 @@ router.put("/user/shopping-cart/add", async (req, res) => {
 
     if (shoppingCart && product && !added) {
       product.isInCart = true;
-      product = product.save();
+      product = await product.save();
       shoppingCart.products.push(product);
       shoppingCart = shoppingCart.save();
       res.json(true);
