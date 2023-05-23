@@ -885,7 +885,14 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
       { $pull: { products: { code: Number(prodCode) } } }
     );
 
-    console.log("Quedan: ", shoppingCartUpdated.products.length);
+    const productUpdated = await ProductModel.findByIdAndUpdate(
+      {
+        code: Number(prodCode),
+      },
+      {
+        $set: { isInCart: false },
+      }
+    );
 
     res.json(shoppingCartUpdated);
   } catch (error) {
@@ -956,6 +963,8 @@ router.put("/user/shopping-cart/add", async (req, res) => {
     }).exec();
 
     if (shoppingCart && product && !added) {
+      product.isInCart = true;
+      product = product.save();
       shoppingCart.products.push(product);
       shoppingCart = shoppingCart.save();
       res.json(true);
