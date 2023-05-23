@@ -885,7 +885,7 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
       { $pull: { products: { code: Number(prodCode) } } }
     );
 
-    const productUpdated = await ProductModel.findByIdAndUpdate(
+    const productUpdated = await ProductModel.findOneAndUpdate(
       {
         code: Number(prodCode),
       },
