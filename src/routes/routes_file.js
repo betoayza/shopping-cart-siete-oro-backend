@@ -762,7 +762,7 @@ router.put("/user/shopping-cart/add", async (req, res) => {
       code: Number(userCode),
     }).exec();
 
-    const product = await ProductModel.findOne({
+    let product = await ProductModel.findOne({
       $and: [{ code: Number(productCode) }, { status: "Activo" }],
     }).exec();
 
@@ -781,7 +781,7 @@ router.put("/user/shopping-cart/add", async (req, res) => {
       product.isInCart = true;
       product = await product.save();
       shoppingCart.products.push(product);
-      shoppingCart = await shoppingCart.save();
+      await shoppingCart.save();
 
       res.json(true);
     } else {
