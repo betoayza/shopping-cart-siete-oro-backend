@@ -741,7 +741,7 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
 
     await ProductModel.updateMany(
       { code: { $in: productCodesArrays } },
-      { isInCart: false }
+      { $set: { isInCart: false } }
     );
 
     // limpiar shopping cart
