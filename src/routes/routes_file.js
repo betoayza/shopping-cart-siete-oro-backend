@@ -728,10 +728,21 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
     // cambiar la propiedad "isInCart" a false de cada producto
     // 1) traer los codigos de los productos
     // 2) actualizar cada producto por codigo
-    const shoppingCartProducts = await ShoppingCartModel.find({}).populate(
-      "products.ProductModel"
-    );
+    const shoppingCartProducts = await ShoppingCartModel.find({
+      code: userCode,
+    }).populate("products.ProductModel");
+
     console.error(shoppingCartProducts);
+
+    const productCodesArrays = shoppingCartProducts.map(
+      (product) => product.code
+    );
+    console.error(productCodesArrays);
+
+    await ProductModel.updateMany(
+      { code: { $in: productCodesArrays } },
+      { isInCart: false }
+    );
 
     // limpiar shopping cart
     const shoppingCartUpdated = await ShoppingCartModel.findOneAndUpdate(
