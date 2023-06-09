@@ -725,6 +725,15 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
 router.delete("/user/shopping-cart/delete/all", async (req, res) => {
   try {
     const { userCode } = req.body;
+    // cambiar la propiedad "isInCart" a false de cada producto
+    // 1) traer los codigos de los productos
+    // 2) actualizar cada producto por codigo
+    const shoppingCartProducts = await ShoppingCartModel.find({}).populate(
+      "products.ProductModel"
+    );
+    console.error(shoppingCartProducts);
+
+    // limpiar shopping cart
     const shoppingCartUpdated = await ShoppingCartModel.findOneAndUpdate(
       { code: userCode },
       { products: [] },
