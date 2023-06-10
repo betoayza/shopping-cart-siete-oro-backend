@@ -722,7 +722,6 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
   }
 }); //working
 
-
 // SEGUIR ACA
 router.delete("/user/shopping-cart/delete/all", async (req, res) => {
   try {
@@ -734,12 +733,12 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
       code: Number(userCode),
     }).populate("products.ProductModel");
 
-    console.error(shoppingCartProducts);
+    console.log(shoppingCartProducts);
 
     const productCodesArrays = shoppingCartProducts.map(
       (product) => product.code
     );
-    console.error(productCodesArrays);
+    console.log(productCodesArrays);
 
     await ProductModel.updateMany(
       { code: { $in: productCodesArrays } },
