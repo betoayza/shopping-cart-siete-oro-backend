@@ -722,6 +722,8 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
   }
 }); //working
 
+
+// SEGUIR ACA
 router.delete("/user/shopping-cart/delete/all", async (req, res) => {
   try {
     const { userCode } = req.body;
@@ -729,7 +731,7 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
     // 1) traer los codigos de los productos
     // 2) actualizar cada producto por codigo
     const shoppingCartProducts = await ShoppingCartModel.find({
-      code: userCode,
+      code: Number(userCode),
     }).populate("products.ProductModel");
 
     console.error(shoppingCartProducts);
