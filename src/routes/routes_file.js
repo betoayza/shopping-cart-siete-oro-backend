@@ -731,7 +731,7 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
     // 2) actualizar cada producto por codigo
     const shoppingCartProducts = await ShoppingCartModel.find({
       code: Number(userCode),
-    }).populate("products.ProductModel");
+    }).populate("products");
 
     console.log(shoppingCartProducts);
 
