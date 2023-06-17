@@ -749,7 +749,7 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
     const shoppingCartUpdated = await ShoppingCartModel.findOneAndUpdate(
       { code: userCode },
       { products: [] },
-      { new: true }
+      { new: true, omitUndefined: true }
     );
 
     res.json(shoppingCartUpdated);
