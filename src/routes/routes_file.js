@@ -725,10 +725,10 @@ router.delete(`/user/shopping-cart/delete`, async (req, res) => {
 // SEGUIR ACA
 router.delete("/user/shopping-cart/delete/all", async (req, res) => {
   try {
-    const { userCode } = req.body; 
+    const { userCode } = req.body;
 
     const shoppingCart = await ShoppingCartModel.findOne({
-      code: userCode,
+      code: Number(userCode),
     });
 
     if (shoppingCart) {
