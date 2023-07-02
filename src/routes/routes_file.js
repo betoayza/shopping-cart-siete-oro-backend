@@ -732,7 +732,9 @@ router.delete("/user/shopping-cart/delete/all", async (req, res) => {
     });
 
     if (shoppingCart) {
-      const productCodesArrays = shoppingCart.products;
+      const productCodesArrays = shoppingCart.products.map(
+        (product) => product.code
+      );
 
       await ProductModel.updateMany(
         { code: { $in: productCodesArrays } },
