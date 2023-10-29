@@ -5,11 +5,11 @@ import cors from "cors";
 const app = express();
 const port_number = process.env.PORT || 4000;
 
-app.use(cors()) // allows any origin
+app.use(cors()); // allows any origin
 //Para que el navegador muestre todo en formato json
 app.use(express.json());
 
-//Middleware para parsear el cuerpo de las peticiones HTTP
+//Middleware to parse POST forms to req.body
 app.use(
   express.urlencoded({
     extended: true,
